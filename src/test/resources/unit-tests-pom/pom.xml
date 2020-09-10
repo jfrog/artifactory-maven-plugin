@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.jfrog.test</groupId>
+    <artifactId>unit-tests-pom</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>Unit tests pom</name>
+
+    <properties>
+        <test.property.key>value</test.property.key>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <deployProperties>
+                                <propKey>propVal</propKey>
+                            </deployProperties>
+                            <artifactory>
+                                <includeEnvVars>true</includeEnvVars>
+                                <envVarsExcludePatterns>*password*,*secret*,*key*,*token*,*passphrase*
+                                </envVarsExcludePatterns>
+                                <envVarsIncludePatterns>*</envVarsIncludePatterns>
+                                <timeoutSec>60</timeoutSec>
+                            </artifactory>
+                            <resolver>
+                                <contextUrl>http://1.2.3.4/artifactory</contextUrl>
+                                <username>admin</username>
+                                <password>password</password>
+                                <repoKey>libs-release</repoKey>
+                                <downloadSnapshotRepoKey>libs-snapshot</downloadSnapshotRepoKey>
+                            </resolver>
+                            <publisher>
+                                <contextUrl>http://1.2.3.4/artifactory</contextUrl>
+                                <username>admin</username>
+                                <password>password</password>
+                                <excludePatterns>*-tests.jar</excludePatterns>
+                                <repoKey>libs-release-local</repoKey>
+                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+                            </publisher>
+                            <buildInfo>
+                                <buildName>buildName</buildName>
+                                <buildNumber>1</buildNumber>
+                                <buildUrl>http://1.2.3.4</buildUrl>
+                                <agentName>agentName</agentName>
+                                <agentVersion>2</agentVersion>
+                                <buildRetentionMaxDays>5</buildRetentionMaxDays>
+                            </buildInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
