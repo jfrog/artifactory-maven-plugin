@@ -82,7 +82,7 @@ public class ResolutionRepoHelper {
     }
 
     /**
-     * Create artifactory snapshots resolution repository.
+     * Create artifactory releases resolution repository.
      *
      * @param repoUrl               - The repository URL
      * @param authentication        - The repository credentials

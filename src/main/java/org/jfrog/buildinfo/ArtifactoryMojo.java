@@ -46,16 +46,16 @@ public class ArtifactoryMojo extends AbstractMojo {
     RepositoryListener repositoryListener;
 
     @Parameter
-    Map<String, String> deployProperties = new HashMap<>();
-
-    @Parameter
     Config.Artifactory artifactory = new Config.Artifactory();
 
     @Parameter
-    Config.Publisher publisher = new Config.Publisher();
+    Map<String, String> deployProperties = new HashMap<>();
 
     @Parameter
     Config.BuildInfo buildInfo = new Config.BuildInfo();
+
+    @Parameter
+    Config.Publisher publisher = new Config.Publisher();
 
     @Parameter
     Config.Resolver resolver = new Config.Resolver();
@@ -155,9 +155,8 @@ public class ArtifactoryMojo extends AbstractMojo {
      * @param value            - The value of the property
      */
     private void addDeployProperty(Properties deployProperties, String key, String value) {
-        if (StringUtils.isBlank(value)) {
-            return;
+        if (StringUtils.isNotBlank(value)) {
+            deployProperties.put(ClientProperties.PROP_DEPLOY_PARAM_PROP_PREFIX + key, value);
         }
-        deployProperties.put(ClientProperties.PROP_DEPLOY_PARAM_PROP_PREFIX + key, value);
     }
 }
