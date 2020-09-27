@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install
         run: mvn install
-      - name: deploy
+      - name: Deploy
         run: >-
           mvn deploy
           -DARTIFACTORY_URL=${{ secrets.ARTIFACTORY_URL }}
