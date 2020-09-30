@@ -37,4 +37,4 @@ We welcome pull requests from the community.
 If the existing tests do not already cover your changes, please add tests.
 
 ## Release Notes
-The release notes are available on [Bintray](https://bintray.com/jfrog/jfrog-jars/artifactory-maven-plugin#release).
+The release notes are available [here](https://www.jfrog.com/confluence/display/JFROG/Maven+Artifactory+Plugin#MavenArtifactoryPlugin-ReleaseNotes).
