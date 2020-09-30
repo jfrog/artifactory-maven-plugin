@@ -1,4 +1,4 @@
-[![Build status](https://github.com/jfrog/artifactory-maven-plugin/workflows/Test/badge.svg)](https://github.com/jfrog/artifactory-maven-plugin/actions)
+[![Build status](https://github.com/jfrog/artifactory-maven-plugin/workflows/Test/badge.svg)](https://github.com/jfrog/artifactory-maven-plugin/actions?query=workflow%3ATest)
 
 # Maven Artifactory plugin
 
