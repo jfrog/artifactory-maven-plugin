@@ -1,3 +1,5 @@
+[![Build status](https://github.com/jfrog/artifactory-maven-plugin/workflows/Test/badge.svg)](https://github.com/jfrog/artifactory-maven-plugin/actions)
+
 # Maven Artifactory plugin
 
 The Maven Artifactory integrates in your build to allow you to do the following:
