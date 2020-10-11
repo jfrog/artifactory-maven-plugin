@@ -157,7 +157,7 @@ public class Utils {
      * Parse "aaa{{var1|var2|var3}bbb}" values provided by the user in the pom.xml.
      *
      * @param input - Value from pom.xml
-     * @return - The selected value
+     * @return the selected value
      * @throws IllegalArgumentException if '}}' is missing
      */
     public static String parseInput(String input) {
@@ -185,7 +185,7 @@ public class Utils {
      * or system properties. Last variable is the fallback (default) value if wrapped in double quotes.
      *
      * @param input - Input values surrounded by {{}}, separated by "|"
-     * @return First variable exist in environment or system properties. Empty string otherwise.
+     * @return first variable exist in environment or system properties. Empty string otherwise.
      * @throws IllegalArgumentException if '}}' is missing
      */
     private static String parseCurlyBrackets(String input) {
@@ -211,10 +211,10 @@ public class Utils {
         // Otherwise, return empty string.
         int lastNotDefault = defaultValue == null ? tokens.length - 1 : tokens.length - 2;
         for (int i = 0; i <= lastNotDefault; i++) {
-            String val = tokens[i];
-            String res = StringUtils.firstNonBlank(System.getenv(val), System.getProperty(val));
-            if (res != null) {
-                return res;
+            String currentToken = tokens[i];
+            String variableValue = StringUtils.firstNonBlank(System.getenv(currentToken), System.getProperty(currentToken));
+            if (variableValue != null) {
+                return variableValue;
             }
         }
 
