@@ -7,6 +7,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
+import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -48,12 +49,14 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     private final ArtifactoryClientConfiguration conf;
     private final BuildDeployer buildDeployer;
     private final Log logger;
+    private final ExecutionListener wrappedListener;
 
-    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf) {
+    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf, ExecutionListener wrappedListener) {
         this.buildInfoBuilder = new BuildInfoModelPropertyResolver(logger, session, conf);
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
+        this.wrappedListener = wrappedListener;
     }
 
     /**
@@ -84,6 +87,10 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
         currentModuleArtifacts.remove();
         currentModuleDependencies.remove();
         buildTimeDependencies.clear();
+
+        if (wrappedListener != null) {
+            wrappedListener.projectSucceeded(event);
+        }
     }
 
     /**
@@ -94,6 +101,10 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     @Override
     public void mojoSucceeded(ExecutionEvent event) {
         addDependencies(event.getProject());
+
+        if (wrappedListener != null) {
+            wrappedListener.mojoSucceeded(event);
+        }
     }
 
     /**
@@ -104,6 +115,10 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     @Override
     public void mojoFailed(ExecutionEvent event) {
         addDependencies(event.getProject());
+
+        if (wrappedListener != null) {
+            wrappedListener.mojoFailed(event);
+        }
     }
 
     /**
@@ -118,6 +133,10 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
             buildDeployer.deploy(build, conf, deployableArtifacts);
         }
         deployableArtifacts.clear();
+
+        if (wrappedListener != null) {
+            wrappedListener.sessionEnded(event);
+        }
     }
 
     /**
@@ -379,5 +398,97 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
             return snapshotsRepository;
         }
         return conf.publisher.getRepoKey();
+    }
+
+    // Forward any all events to the wrapped listener if set
+    @Override
+    public void projectDiscoveryStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.projectDiscoveryStarted(event);
+        }
+    }
+
+    @Override
+    public void sessionStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.sessionStarted(event);
+        }
+    }
+
+    @Override
+    public void projectSkipped(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.projectSkipped(event);
+        }
+    }
+
+    @Override
+    public void projectStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.projectStarted(event);
+        }
+    }
+
+    @Override
+    public void projectFailed(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.projectFailed(event);
+        }
+    }
+
+    @Override
+    public void forkStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkStarted(event);
+        }
+    }
+
+    @Override
+    public void forkSucceeded(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkSucceeded(event);
+        }
+    }
+
+    @Override
+    public void forkFailed(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkFailed(event);
+        }
+    }
+
+    @Override
+    public void mojoSkipped(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.mojoSkipped(event);
+        }
+    }
+
+    @Override
+    public void mojoStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.mojoStarted(event);
+        }
+    }
+
+    @Override
+    public void forkedProjectStarted(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkedProjectStarted(event);
+        }
+    }
+
+    @Override
+    public void forkedProjectSucceeded(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkedProjectSucceeded(event);
+        }
+    }
+
+    @Override
+    public void forkedProjectFailed(ExecutionEvent event) {
+        if (wrappedListener != null) {
+            wrappedListener.forkedProjectFailed(event);
+        }
     }
 }
