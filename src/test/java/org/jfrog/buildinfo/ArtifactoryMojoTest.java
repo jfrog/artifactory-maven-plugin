@@ -17,6 +17,12 @@ import static org.jfrog.build.extractor.clientConfiguration.ClientProperties.PRO
  */
 public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
 
+    @Override
+    public void setUp() throws Exception {
+        System.setProperty("USER_FROM_SYS_PROP", "admin");
+        super.setUp();
+    }
+
     public void testArtifactoryConfiguration() {
         Config.Artifactory configArtifactory = mojo.artifactory;
         assertNotNull(configArtifactory);
@@ -68,8 +74,9 @@ public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
         // Test input deploy properties
         Map<String, String> deployProperties = mojo.deployProperties;
         assertNotNull(deployProperties);
-        assertEquals(1, deployProperties.size());
+        assertEquals(2, deployProperties.size());
         assertEquals("propVal", deployProperties.get("propKey"));
+        assertEquals(System.getenv("JAVA_HOME"), deployProperties.get("javaHome"));
 
         // Test actual deploy properties
         Config.Artifactory configArtifactory = mojo.artifactory;
@@ -80,6 +87,7 @@ public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
         assertEquals("buildName", deployProperties.get(PROP_DEPLOY_PARAM_PROP_PREFIX + BuildInfoFields.BUILD_NAME));
         assertEquals("1", deployProperties.get(PROP_DEPLOY_PARAM_PROP_PREFIX + BuildInfoFields.BUILD_NUMBER));
         assertEquals("propVal", deployProperties.get(PROP_DEPLOY_PARAM_PROP_PREFIX + "propKey"));
+        assertEquals(System.getenv("JAVA_HOME"), deployProperties.get(PROP_DEPLOY_PARAM_PROP_PREFIX + "javaHome"));
     }
 
     public void testResolutionRepositories() {
