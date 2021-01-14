@@ -25,6 +25,7 @@
                         <configuration>
                             <deployProperties>
                                 <propKey>propVal</propKey>
+                                <javaHome>{{JAVA_HOME}}</javaHome>
                             </deployProperties>
                             <artifactory>
                                 <includeEnvVars>true</includeEnvVars>
@@ -35,15 +36,15 @@
                             </artifactory>
                             <resolver>
                                 <contextUrl>http://1.2.3.4/artifactory</contextUrl>
-                                <username>admin</username>
-                                <password>password</password>
+                                <username>{{USER_FROM_SYS_PROP}}</username>
+                                <password>{{READ|THE|DEFAULT|=>|"password"}}</password>
                                 <repoKey>libs-release</repoKey>
                                 <downloadSnapshotRepoKey>libs-snapshot</downloadSnapshotRepoKey>
                             </resolver>
                             <publisher>
                                 <contextUrl>http://1.2.3.4/artifactory</contextUrl>
-                                <username>admin</username>
-                                <password>password</password>
+                                <username>{{NOT_EXIST|USER_FROM_SYS_PROP}}</username>
+                                <password>pa{{EMPTY}}ss{{WORD|"word"}}</password>
                                 <excludePatterns>*-tests.jar</excludePatterns>
                                 <repoKey>libs-release-local</repoKey>
                                 <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>

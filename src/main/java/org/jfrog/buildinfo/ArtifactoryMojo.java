@@ -17,6 +17,7 @@ import org.jfrog.build.extractor.clientConfiguration.ClientProperties;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.resolution.RepositoryListener;
 import org.jfrog.buildinfo.resolution.ResolutionRepoHelper;
+import org.jfrog.buildinfo.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -63,9 +64,18 @@ public class ArtifactoryMojo extends AbstractMojo {
     @Override
     public void execute() {
         if (session.getRequest().getData().putIfAbsent("configured", Boolean.TRUE) == null) {
+            replaceVariables();
             enforceResolution();
             enforceDeployment();
         }
+    }
+
+    /**
+     * Replace variables in pom.xml surrounded by {{}} with environment and system variables.
+     */
+    private void replaceVariables() {
+        artifactory.delegate.getAllProperties().replaceAll((key, value) -> Utils.parseInput(value));
+        deployProperties.replaceAll((key, value) -> Utils.parseInput(value));
     }
 
     /**
@@ -99,19 +109,19 @@ public class ArtifactoryMojo extends AbstractMojo {
     }
 
     /**
-     * Skip the default maven deploy behaviour.
-     */
-    private void skipDefaultDeploy() {
-        session.getUserProperties().put("maven.deploy.skip", Boolean.TRUE.toString());
-    }
-
-    /**
      * Return true if 'deploy' or 'maven-deploy-plugin' goals exist.
      *
      * @return true if 'deploy' or 'maven-deploy-plugin' goals exist
      */
     private boolean deployGoalExist() {
         return session.getGoals().stream().anyMatch(goal -> ArrayUtils.contains(DEPLOY_GOALS, goal));
+    }
+
+    /**
+     * Skip the default maven deploy behaviour.
+     */
+    private void skipDefaultDeploy() {
+        session.getUserProperties().put("maven.deploy.skip", Boolean.TRUE.toString());
     }
 
     /**
@@ -153,7 +163,7 @@ public class ArtifactoryMojo extends AbstractMojo {
      * Add a single deploy property.
      *
      * @param deployProperties - The deploy properties collection
-     * @param key              - The ket of the property
+     * @param key              - The key of the property
      * @param value            - The value of the property
      */
     private void addDeployProperty(Properties deployProperties, String key, String value) {

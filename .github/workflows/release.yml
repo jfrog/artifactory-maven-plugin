@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install
-        run: mvn install
+        run: mvn install -B
       - name: Deploy
         run: >-
           mvn deploy

@@ -1,6 +1,7 @@
 package org.jfrog.buildinfo.utils;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.Maven;
 import org.apache.maven.plugin.logging.Log;
@@ -150,5 +151,73 @@ public class Utils {
      */
     public static boolean isFile(File file) {
         return file != null && file.isFile();
+    }
+
+    /**
+     * Parse "aaa{{var1|var2|var3}bbb}" values provided by the user in the pom.xml.
+     *
+     * @param input - Value from pom.xml
+     * @return the selected value
+     * @throws IllegalArgumentException if '}}' is missing
+     */
+    public static String parseInput(String input) {
+        StringBuilder result = new StringBuilder();
+        while (StringUtils.isNotBlank(input)) {
+            // Add everything before '{{' to results
+            String beforeBrackets = StringUtils.substringBefore(input, "{{");
+            result.append(beforeBrackets);
+
+            // Remove everything before '{{'
+            input = StringUtils.removeStart(input, beforeBrackets);
+
+            // Parse everything inside '{{}}'
+            if (StringUtils.startsWith(input, "{{")) {
+                result.append(parseCurlyBrackets(input));
+                // Remove '{{}}'
+                input = StringUtils.substringAfter(input, "}}");
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * Parse "{{var1|var2|var3}}" entries in the value specified to their corresponding environment variables
+     * or system properties. Last variable is the fallback (default) value if wrapped in double quotes.
+     *
+     * @param input - Input values surrounded by {{}}, separated by "|"
+     * @return first variable exist in environment or system properties. Empty string otherwise.
+     * @throws IllegalArgumentException if '}}' is missing
+     */
+    private static String parseCurlyBrackets(String input) {
+        // Unbox curly brackets from string
+        String unboxed = StringUtils.substringBetween(input, "{{", "}}");
+        if (unboxed == null) {
+            throw new IllegalArgumentException("Illegal input '" + input + "'. Missing '}}'.");
+        }
+
+        // Tokenize string by '|'
+        String[] tokens = StringUtils.split(unboxed, "|");
+        if (ArrayUtils.isEmpty(tokens)) {
+            // {{}}
+            return StringUtils.EMPTY;
+        }
+
+        // Calculate default value
+        String lastValue = tokens[tokens.length - 1];
+        String defaultValue = StringUtils.substringBetween(lastValue, "\""); // Nullable
+
+        // Return first value that exists as environment variable or system property.
+        // Otherwise, if the default value exist, return it.
+        // Otherwise, return empty string.
+        int lastNotDefault = defaultValue == null ? tokens.length - 1 : tokens.length - 2;
+        for (int i = 0; i <= lastNotDefault; i++) {
+            String currentToken = tokens[i];
+            String variableValue = StringUtils.firstNonBlank(System.getenv(currentToken), System.getProperty(currentToken));
+            if (variableValue != null) {
+                return variableValue;
+            }
+        }
+
+        return StringUtils.defaultString(defaultValue);
     }
 }
