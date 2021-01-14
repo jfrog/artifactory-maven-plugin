@@ -3,6 +3,7 @@ package org.jfrog.buildinfo.deployment;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.AbstractExecutionListener;
@@ -38,7 +39,7 @@ import static org.jfrog.buildinfo.utils.Utils.*;
 /**
  * @author yahavi
  */
-public class BuildInfoRecorder extends AbstractExecutionListener implements BuildInfoExtractor<ExecutionEvent> {
+public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, ExecutionListener {
 
     private final Map<String, DeployDetails> deployableArtifacts = Maps.newConcurrentMap();
     private final Set<Artifact> buildTimeDependencies = Collections.synchronizedSet(new HashSet<>());
@@ -56,7 +57,7 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
-        this.wrappedListener = wrappedListener;
+        this.wrappedListener = ObjectUtils.defaultIfNull(wrappedListener, new AbstractExecutionListener());
     }
 
     /**
@@ -88,9 +89,7 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
         currentModuleDependencies.remove();
         buildTimeDependencies.clear();
 
-        if (wrappedListener != null) {
-            wrappedListener.projectSucceeded(event);
-        }
+        wrappedListener.projectSucceeded(event);
     }
 
     /**
@@ -102,9 +101,7 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     public void mojoSucceeded(ExecutionEvent event) {
         addDependencies(event.getProject());
 
-        if (wrappedListener != null) {
-            wrappedListener.mojoSucceeded(event);
-        }
+        wrappedListener.mojoSucceeded(event);
     }
 
     /**
@@ -116,9 +113,7 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     public void mojoFailed(ExecutionEvent event) {
         addDependencies(event.getProject());
 
-        if (wrappedListener != null) {
-            wrappedListener.mojoFailed(event);
-        }
+        wrappedListener.mojoFailed(event);
     }
 
     /**
@@ -134,9 +129,7 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
         }
         deployableArtifacts.clear();
 
-        if (wrappedListener != null) {
-            wrappedListener.sessionEnded(event);
-        }
+        wrappedListener.sessionEnded(event);
     }
 
     /**
@@ -403,92 +396,66 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     // Forward any all events to the wrapped listener if set
     @Override
     public void projectDiscoveryStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.projectDiscoveryStarted(event);
-        }
+        wrappedListener.projectDiscoveryStarted(event);
     }
 
     @Override
     public void sessionStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.sessionStarted(event);
-        }
+        wrappedListener.sessionStarted(event);
     }
 
     @Override
     public void projectSkipped(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.projectSkipped(event);
-        }
+        wrappedListener.projectSkipped(event);
     }
 
     @Override
     public void projectStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.projectStarted(event);
-        }
+        wrappedListener.projectStarted(event);
     }
 
     @Override
     public void projectFailed(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.projectFailed(event);
-        }
+        wrappedListener.projectFailed(event);
     }
 
     @Override
     public void forkStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkStarted(event);
-        }
+        wrappedListener.forkStarted(event);
     }
 
     @Override
     public void forkSucceeded(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkSucceeded(event);
-        }
+        wrappedListener.forkSucceeded(event);
     }
 
     @Override
     public void forkFailed(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkFailed(event);
-        }
+        wrappedListener.forkFailed(event);
     }
 
     @Override
     public void mojoSkipped(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.mojoSkipped(event);
-        }
+        wrappedListener.mojoSkipped(event);
     }
 
     @Override
     public void mojoStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.mojoStarted(event);
-        }
+        wrappedListener.mojoStarted(event);
     }
 
     @Override
     public void forkedProjectStarted(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkedProjectStarted(event);
-        }
+        wrappedListener.forkedProjectStarted(event);
     }
 
     @Override
     public void forkedProjectSucceeded(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkedProjectSucceeded(event);
-        }
+        wrappedListener.forkedProjectSucceeded(event);
     }
 
     @Override
     public void forkedProjectFailed(ExecutionEvent event) {
-        if (wrappedListener != null) {
-            wrappedListener.forkedProjectFailed(event);
-        }
+        wrappedListener.forkedProjectFailed(event);
     }
 }
