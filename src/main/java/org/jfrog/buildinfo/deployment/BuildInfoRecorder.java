@@ -3,10 +3,12 @@ package org.jfrog.buildinfo.deployment;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
+import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -37,7 +39,7 @@ import static org.jfrog.buildinfo.utils.Utils.*;
 /**
  * @author yahavi
  */
-public class BuildInfoRecorder extends AbstractExecutionListener implements BuildInfoExtractor<ExecutionEvent> {
+public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, ExecutionListener {
 
     private final Map<String, DeployDetails> deployableArtifacts = Maps.newConcurrentMap();
     private final Set<Artifact> buildTimeDependencies = Collections.synchronizedSet(new HashSet<>());
@@ -48,12 +50,14 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     private final ArtifactoryClientConfiguration conf;
     private final BuildDeployer buildDeployer;
     private final Log logger;
+    private final ExecutionListener wrappedListener;
 
-    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf) {
+    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf, ExecutionListener wrappedListener) {
         this.buildInfoBuilder = new BuildInfoModelPropertyResolver(logger, session, conf);
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
+        this.wrappedListener = ObjectUtils.defaultIfNull(wrappedListener, new AbstractExecutionListener());
     }
 
     /**
@@ -84,6 +88,8 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
         currentModuleArtifacts.remove();
         currentModuleDependencies.remove();
         buildTimeDependencies.clear();
+
+        wrappedListener.projectSucceeded(event);
     }
 
     /**
@@ -94,6 +100,8 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     @Override
     public void mojoSucceeded(ExecutionEvent event) {
         addDependencies(event.getProject());
+
+        wrappedListener.mojoSucceeded(event);
     }
 
     /**
@@ -104,6 +112,8 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
     @Override
     public void mojoFailed(ExecutionEvent event) {
         addDependencies(event.getProject());
+
+        wrappedListener.mojoFailed(event);
     }
 
     /**
@@ -118,6 +128,8 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
             buildDeployer.deploy(build, conf, deployableArtifacts);
         }
         deployableArtifacts.clear();
+
+        wrappedListener.sessionEnded(event);
     }
 
     /**
@@ -379,5 +391,71 @@ public class BuildInfoRecorder extends AbstractExecutionListener implements Buil
             return snapshotsRepository;
         }
         return conf.publisher.getRepoKey();
+    }
+
+    // Forward any all events to the wrapped listener if set
+    @Override
+    public void projectDiscoveryStarted(ExecutionEvent event) {
+        wrappedListener.projectDiscoveryStarted(event);
+    }
+
+    @Override
+    public void sessionStarted(ExecutionEvent event) {
+        wrappedListener.sessionStarted(event);
+    }
+
+    @Override
+    public void projectSkipped(ExecutionEvent event) {
+        wrappedListener.projectSkipped(event);
+    }
+
+    @Override
+    public void projectStarted(ExecutionEvent event) {
+        wrappedListener.projectStarted(event);
+    }
+
+    @Override
+    public void projectFailed(ExecutionEvent event) {
+        wrappedListener.projectFailed(event);
+    }
+
+    @Override
+    public void forkStarted(ExecutionEvent event) {
+        wrappedListener.forkStarted(event);
+    }
+
+    @Override
+    public void forkSucceeded(ExecutionEvent event) {
+        wrappedListener.forkSucceeded(event);
+    }
+
+    @Override
+    public void forkFailed(ExecutionEvent event) {
+        wrappedListener.forkFailed(event);
+    }
+
+    @Override
+    public void mojoSkipped(ExecutionEvent event) {
+        wrappedListener.mojoSkipped(event);
+    }
+
+    @Override
+    public void mojoStarted(ExecutionEvent event) {
+        wrappedListener.mojoStarted(event);
+    }
+
+    @Override
+    public void forkedProjectStarted(ExecutionEvent event) {
+        wrappedListener.forkedProjectStarted(event);
+    }
+
+    @Override
+    public void forkedProjectSucceeded(ExecutionEvent event) {
+        wrappedListener.forkedProjectSucceeded(event);
+    }
+
+    @Override
+    public void forkedProjectFailed(ExecutionEvent event) {
+        wrappedListener.forkedProjectFailed(event);
     }
 }

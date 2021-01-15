@@ -63,9 +63,11 @@ public class ArtifactoryMojo extends AbstractMojo {
 
     @Override
     public void execute() {
-        replaceVariables();
-        enforceResolution();
-        enforceDeployment();
+        if (session.getRequest().getData().putIfAbsent("configured", Boolean.TRUE) == null) {
+            replaceVariables();
+            enforceResolution();
+            enforceDeployment();
+        }
     }
 
     /**
@@ -101,7 +103,7 @@ public class ArtifactoryMojo extends AbstractMojo {
         skipDefaultDeploy();
         completeConfig();
         addDeployProperties();
-        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate);
+        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate, session.getRequest().getExecutionListener());
         repositoryListener.setBuildInfoRecorder(executionListener);
         session.getRequest().setExecutionListener(executionListener);
     }
