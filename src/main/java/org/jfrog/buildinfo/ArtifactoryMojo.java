@@ -103,7 +103,7 @@ public class ArtifactoryMojo extends AbstractMojo {
         skipDefaultDeploy();
         completeConfig();
         addDeployProperties();
-        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate, session.getRequest().getExecutionListener());
+        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate);
         repositoryListener.setBuildInfoRecorder(executionListener);
         session.getRequest().setExecutionListener(executionListener);
     }

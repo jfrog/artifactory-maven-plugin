@@ -48,16 +48,16 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
     private final ThreadLocal<ModuleBuilder> currentModule = new ThreadLocal<>();
     private final BuildInfoMavenBuilder buildInfoBuilder;
     private final ArtifactoryClientConfiguration conf;
+    private final ExecutionListener wrappedListener;
     private final BuildDeployer buildDeployer;
     private final Log logger;
-    private final ExecutionListener wrappedListener;
 
-    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf, ExecutionListener wrappedListener) {
+    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf) {
+        this.wrappedListener = ObjectUtils.defaultIfNull(session.getRequest().getExecutionListener(), new AbstractExecutionListener());
         this.buildInfoBuilder = new BuildInfoModelPropertyResolver(logger, session, conf);
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
-        this.wrappedListener = ObjectUtils.defaultIfNull(wrappedListener, new AbstractExecutionListener());
     }
 
     /**
