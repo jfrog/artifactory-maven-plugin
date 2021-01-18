@@ -13,7 +13,7 @@
 
     <properties>
         <maven.min.version>3.3.9</maven.min.version>
-        <buildinfo.version>2.19.1</buildinfo.version>
+        <buildinfo.version>2.21.1</buildinfo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
