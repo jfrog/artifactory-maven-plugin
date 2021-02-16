@@ -28,6 +28,7 @@ import org.jfrog.build.extractor.clientConfiguration.PatternMatcher;
 import org.jfrog.build.extractor.clientConfiguration.deploy.DeployDetails;
 import org.jfrog.buildinfo.resolution.RepositoryListener;
 import org.jfrog.buildinfo.types.ModuleArtifacts;
+import org.jfrog.buildinfo.utils.Utils;
 
 import java.io.File;
 import java.util.*;
@@ -71,6 +72,9 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         ModuleBuilder moduleBuilder = new ModuleBuilder()
                 .id(getModuleIdString(project.getGroupId(), project.getArtifactId(), project.getVersion()))
                 .properties(project.getProperties());
+
+        // Replace variables
+        conf.getAllProperties().replaceAll((key, value) -> Utils.parseInput(value));
 
         // Fill currentModuleArtifacts
         addArtifacts(project);
