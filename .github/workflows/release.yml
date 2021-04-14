@@ -7,12 +7,37 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+
+      # Configure Java 8 and generate a settings.xml file containing the OSSRH credentials
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 1.8
+          server-id: ossrh
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_PASSWORD
+          gpg-private-key: ${{ secrets.OSSRH_GPG_PRIVATE_KEY }}
+          gpg-passphrase: OSSRH_GPG_PASSPHRASE
+
+      # Run mvn install
       - name: Install
         run: mvn install -B
-      - name: Deploy
+
+      # Deploy to oss.jfrog.org
+      - name: Deploy To OJO
         run: >-
-          mvn deploy
+          mvn -B deploy
           -DARTIFACTORY_URL=${{ secrets.ARTIFACTORY_URL }}
           -DARTIFACTORY_USERNAME=${{ secrets.ARTIFACTORY_USERNAME }}
           -DARTIFACTORY_PASSWORD=${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      # Deploy to Maven Central
+      - name: Deploy to Maven Central
+        run: mvn -B deploy -Pupload-to-central
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_PASSPHRASE }}
+
