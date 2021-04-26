@@ -37,6 +37,7 @@ public class BuildInfoClientBuilder {
         setTimeout(client);
         setRetriesParams(client);
         setInsecureTls(client);
+        setProxy(client);
         return client;
     }
 
@@ -85,6 +86,16 @@ public class BuildInfoClientBuilder {
         boolean insecureTls = clientConf.getInsecureTls();
         logResolvedProperty(PROP_CONNECTION_RETRIES, String.valueOf(insecureTls));
         client.setInsecureTls(insecureTls);
+    }
+
+    // https://github.com/jfrog/artifactory-maven-plugin/issues/14
+    private void setProxy(ArtifactoryBuildInfoClient client) {
+        final String proxyHost = clientConf.proxy.getHost();
+        if (proxyHost == null) {
+            return;
+        }
+        final int proxyPort = clientConf.proxy.getPort();
+        client.setProxyConfiguration(proxyHost, proxyPort);
     }
 
     private void logResolvedProperty(String key, String value) {
