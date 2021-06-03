@@ -135,7 +135,7 @@ public class ArtifactoryPluginITest extends TestCase {
 
     private void initializeMockServer(ClientAndServer mockServer) {
         mockServer.when(request("/artifactory/api/system/version")).respond(HttpResponse.response("{\"version\":\"7.0.0\"}"));
-        mockServer.when(request()).respond(HttpResponse.response().withStatusCode(200));
+        mockServer.when(request()).respond(HttpResponse.response().withStatusCode(200).withBody("{}"));
     }
 
     private void runProject(String projectName) throws VerificationException, IOException {
@@ -157,7 +157,7 @@ public class ArtifactoryPluginITest extends TestCase {
         FileFilter fileFilter = new WildcardFileFilter("artifactory-maven-plugin*");
         File[] files = new File("target").listFiles(fileFilter);
         assertNotNull(PLUGIN_NOT_INSTALLED, files);
-        assertEquals(1, files.length);
+        assertEquals(3, files.length);
         String withoutStart = StringUtils.removeStart(files[0].getName(), "artifactory-maven-plugin-");
         return StringUtils.removeEnd(withoutStart, ".jar");
     }

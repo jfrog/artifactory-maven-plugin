@@ -13,7 +13,7 @@
 
     <properties>
         <maven.min.version>3.3.9</maven.min.version>
-        <buildinfo.version>2.21.1</buildinfo.version>
+        <buildinfo.version>2.26.4</buildinfo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -136,6 +136,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.9.0</version>
         </dependency>
 
         <!--Annotations-->

@@ -9,7 +9,8 @@ import org.jfrog.build.api.Module;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
 import org.jfrog.build.extractor.ModuleParallelDeployHelper;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
-import org.jfrog.build.extractor.clientConfiguration.client.ArtifactoryBuildInfoClient;
+import org.jfrog.build.extractor.clientConfiguration.ArtifactoryManagerBuilder;
+import org.jfrog.build.extractor.clientConfiguration.client.artifactory.ArtifactoryManager;
 import org.jfrog.build.extractor.clientConfiguration.deploy.DeployDetails;
 import org.jfrog.build.extractor.retention.Utils;
 
@@ -48,7 +49,10 @@ public class BuildDeployer {
             return;
         }
 
-        try (ArtifactoryBuildInfoClient client = new BuildInfoClientBuilder(logger).clientConf(clientConf).build()) {
+        try (ArtifactoryManager client = new ArtifactoryManagerBuilder().setClientConfiguration(clientConf, clientConf.publisher).build()) {
+            if (clientConf.getInsecureTls()) {
+                client.setInsecureTls(true);
+            }
             if (isDeployArtifacts) {
                 logger.debug(LOG_PREFIX + "Publication fork count: " + clientConf.publisher.getPublishForkCount());
                 new ModuleParallelDeployHelper().deployArtifacts(client, deployableArtifactsByModule, clientConf.publisher.getPublishForkCount());
