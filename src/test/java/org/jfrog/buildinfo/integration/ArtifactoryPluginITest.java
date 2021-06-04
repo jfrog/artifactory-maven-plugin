@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
 import static org.mockserver.model.HttpRequest.request;
@@ -29,7 +30,7 @@ import static org.mockserver.model.HttpRequest.request;
 /**
  * === Integration tests ===
  * The tests execute 'mvn clean deploy' automatically on each one of the test projects.
- * In order to use the latest plugin code, run 'maven clean install' before running the tests.
+ * In order to use the latest plugin code, run 'mvn clean install' before running the tests.
  * <p>
  * To run the integration tests, execute 'mvn verify -DskipITs=false'
  * To remote debug the integration tests, run 'mvn verify -DskipITs=false -DdebugITs=true', add a break point and start
@@ -65,6 +66,7 @@ public class ArtifactoryPluginITest extends TestCase {
             "/artifactory/libs-snapshot-local/org/example/maven-archetype-simple/1.0-SNAPSHOT/maven-archetype-simple-1.0-SNAPSHOT.pom"
     };
 
+    @SuppressWarnings("HttpUrlsUsage")
     public void testMultiModule() throws Exception {
         try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
             initializeMockServer(mockServer);
@@ -144,6 +146,7 @@ public class ArtifactoryPluginITest extends TestCase {
         if (StringUtils.equalsIgnoreCase(System.getProperty("debugITs"), "true")) {
             verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
         }
+        verifier.getVerifierProperties().put("use.mavenRepoLocal", "false");
         verifier.executeGoals(Lists.newArrayList("clean", "deploy", "-Dartifactory.plugin.version=" + getPluginVersion()));
         verifier.verifyErrorFreeLog();
     }
@@ -158,7 +161,9 @@ public class ArtifactoryPluginITest extends TestCase {
         File[] files = new File("target").listFiles(fileFilter);
         assertNotNull(PLUGIN_NOT_INSTALLED, files);
         assertEquals(3, files.length);
-        String withoutStart = StringUtils.removeStart(files[0].getName(), "artifactory-maven-plugin-");
+        String pluginJar = Arrays.stream(files).map(File::getName).min(Comparator.comparingInt(String::length)).orElse(null);
+        assertNotNull("Couldn't find 'artifactory-maven-plugin-x.y.z.jar' between " + Arrays.toString(files), pluginJar);
+        String withoutStart = StringUtils.removeStart(pluginJar, "artifactory-maven-plugin-");
         return StringUtils.removeEnd(withoutStart, ".jar");
     }
 
