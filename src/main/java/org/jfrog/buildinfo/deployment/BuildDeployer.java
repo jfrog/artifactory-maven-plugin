@@ -13,6 +13,7 @@ import org.jfrog.build.extractor.clientConfiguration.ArtifactoryManagerBuilder;
 import org.jfrog.build.extractor.clientConfiguration.client.artifactory.ArtifactoryManager;
 import org.jfrog.build.extractor.clientConfiguration.deploy.DeployDetails;
 import org.jfrog.build.extractor.retention.Utils;
+import org.jfrog.buildinfo.utils.ArtifactoryMavenLogger;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,7 +50,8 @@ public class BuildDeployer {
             return;
         }
 
-        try (ArtifactoryManager client = new ArtifactoryManagerBuilder().setClientConfiguration(clientConf, clientConf.publisher).build()) {
+        try (ArtifactoryManager client = new ArtifactoryManagerBuilder()
+                .setClientConfiguration(clientConf, clientConf.publisher).setLog(new ArtifactoryMavenLogger(logger)).build()) {
             if (clientConf.getInsecureTls()) {
                 client.setInsecureTls(true);
             }
