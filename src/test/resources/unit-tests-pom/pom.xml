@@ -56,6 +56,7 @@
                                 <agentName>agentName</agentName>
                                 <agentVersion>2</agentVersion>
                                 <buildRetentionMaxDays>5</buildRetentionMaxDays>
+                                <vcsRevision>12345</vcsRevision>
                             </buildInfo>
                         </configuration>
                     </execution>

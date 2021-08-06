@@ -1,5 +1,6 @@
 package org.jfrog.buildinfo.deployment;
 
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
@@ -7,6 +8,7 @@ import org.jfrog.build.api.Agent;
 import org.jfrog.build.api.Build;
 import org.jfrog.build.api.BuildAgent;
 import org.jfrog.build.api.MatrixParameter;
+import org.jfrog.build.api.Vcs;
 import org.jfrog.build.api.builder.BuildInfoMavenBuilder;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 
@@ -62,10 +64,25 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
         parentNumber(clientConf.info.getParentBuildNumber());
         parentName(clientConf.info.getParentBuildName());
         vcsRevision(clientConf.info.getVcsRevision());
+        vcsUrl(clientConf.info.getVcsUrl());
+        createVcs(clientConf.info.getVcsUrl(), clientConf.info.getVcsRevision());
         principal(clientConf.info.getPrincipal());
         url(clientConf.info.getBuildUrl());
-    }
+    }       
 
+    /**
+     * Create VCS list when vcsRevision is defined
+     * 
+     * @param vcsUrl      - Url of the VCS
+     * @param vcsRevision - commit revision
+     */
+    private void createVcs(String vcsUrl, String vcsRevision) {
+        if (StringUtils.isNotBlank(vcsRevision)) {
+            Vcs vcsInstance = new Vcs(vcsUrl, vcsRevision);
+            vcs(Arrays.asList(vcsInstance));
+        }        
+    }
+    
     /**
      * Resolve the build agent
      *

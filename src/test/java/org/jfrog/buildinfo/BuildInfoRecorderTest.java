@@ -7,6 +7,7 @@ import org.apache.maven.execution.ExecutionEvent;
 import org.jfrog.build.api.Build;
 import org.jfrog.build.api.Dependency;
 import org.jfrog.build.api.Module;
+import org.jfrog.build.api.Vcs;
 import org.jfrog.build.api.builder.BuildInfoBuilder;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.types.TestExecutionEvent;
@@ -52,6 +53,9 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertTrue(build.getStarted().startsWith("2020-01-01T00:00:00.000"));
         assertEquals(0, build.getDurationMillis());
         assertEquals("http://1.2.3.4", build.getUrl());
+        assertEquals(1, build.getVcs().size());
+        Vcs vcs = build.getVcs().get(0);
+        assertEquals("12345", vcs.getRevision());
 
         // Check module
         List<Module> modules = build.getModules();

@@ -84,6 +84,7 @@
                                 <buildName>plugin-demo</buildName>
                                 <buildNumber>${buildnumber}</buildNumber>
                                 <buildUrl>http://build-url.org</buildUrl>
+                                <vcsRevision>123456</vcsRevision>
                             </buildInfo>
                         </configuration>
                     </execution>
