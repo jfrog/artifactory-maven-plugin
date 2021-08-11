@@ -7,7 +7,7 @@ pipeline {
 
 	  JFROG_CLI_BUILD_NAME = "${JOB_NAME}"
 	  JFROG_CLI_BUILD_NUMBER = "${BUILD_NUMBER}"
-	  RT_USERNAME="michaelsv"
+	  RT_USERNAME="sverdlov93@gmail.com"
 	  // Sets the CI server build URL in the build-info.
 	  JFROG_CLI_BUILD_URL = "http://127.0.0.1:8080/myjenkins/job/MyMaven/${BUILD_NUMBER}/console"
 	  
