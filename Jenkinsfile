@@ -38,9 +38,7 @@ pipeline {
    
 		stage ('Build') {
 			steps {
-				dir('artifactory-maven-plugin') {
-					sh '''./jfrog rt mvn clean install'''
-				}
+				sh '''./jfrog rt mvn clean install'''
 			}
 		}
 	}
