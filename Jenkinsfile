@@ -33,7 +33,7 @@ pipeline {
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "ARTIFACTORY_SERVER",
-                    .3: 'default-maven-local',
+                    releaseRepo: 'default-maven-local',
                     snapshotRepo: 'default-maven-local'
                 )
 
