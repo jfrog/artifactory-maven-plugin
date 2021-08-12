@@ -3,7 +3,7 @@ pipeline {
 	environment {
 		
 	  // The M2_HOME environment variable should be set to the local maven installation path.
-	  M2_HOME = "/Users/michaelsv/.m2/repository"
+	  M2_HOME = "/Users/michaelsv/.sdkman/candidates/maven/3.8.1/"
 
 	  JFROG_CLI_BUILD_NAME = "${JOB_NAME}"
 	  JFROG_CLI_BUILD_NUMBER = "${BUILD_NUMBER}"
