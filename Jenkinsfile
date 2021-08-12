@@ -59,7 +59,7 @@ pipeline {
                 rtMavenRun (
                     tool: 'maven 3.8.1', // Tool name from Jenkins configuration
                     pom: 'pom.xml',
-                    goals: 'install -DskipITs',
+                    goals: 'clean install -DskipITs=true',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER",
                 )
