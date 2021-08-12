@@ -24,10 +24,10 @@ pipeline {
 
                 rtServer (
                     id: "ARTIFACTORY_SERVER",
-                    url: “https://michaelsv.jfrog.io/artifactory“,
+                    url: 'https://michaelsv.jfrog.io/artifactory',
                     username: RT_USERNAME,
-		   password: RT_PASSWORD,
-		   credentialsId: "rt-password"
+		    password: RT_PASSWORD,
+		    credentialsId: "rt-password"
                 )
 
 
