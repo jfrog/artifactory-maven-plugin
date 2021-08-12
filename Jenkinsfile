@@ -62,8 +62,6 @@ pipeline {
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER",
-		    buildName: 'my-build-name',
-    		    buildNumber: '17',
                 )
 
             }
