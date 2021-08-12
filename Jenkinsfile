@@ -27,7 +27,7 @@ pipeline {
                     url: 'https://michaelsv.jfrog.io/artifactory',
                     username: RT_USERNAME,
 		    password: RT_PASSWORD,
-		    credentialsId: "rt-password"
+		    credentialsId: 'rt-password'
                 )
 
 
@@ -35,8 +35,8 @@ pipeline {
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "ARTIFACTORY_SERVER",
-                    releaseRepo: default-maven-local,
-                    snapshotRepo: default-maven-local
+                    releaseRepo: 'default-maven-local',
+                    snapshotRepo: 'default-maven-local'
                 )
 
 
@@ -44,8 +44,8 @@ pipeline {
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
                     serverId: "ARTIFACTORY_SERVER",
-                    releaseRepo: default-maven-virtual,
-                    snapshotRepo: default-maven-virtual
+                    releaseRepo: 'default-maven-virtual',
+                    snapshotRepo: 'default-maven-virtual'
                 )
 
             }
