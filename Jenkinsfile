@@ -33,7 +33,7 @@ pipeline {
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "ARTIFACTORY_SERVER",
-                    releaseRepo: 'default-maven-local',
+                    .3: 'default-maven-local',
                     snapshotRepo: 'default-maven-local'
                 )
 
@@ -59,7 +59,7 @@ pipeline {
                 rtMavenRun (
                     tool: 'maven 3.8.1', // Tool name from Jenkins configuration
                     pom: 'pom.xml',
-                    goals: 'clean install',
+                    goals: 'clean install DskipITs=true',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER",
                 )
