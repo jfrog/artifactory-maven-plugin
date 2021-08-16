@@ -2,6 +2,11 @@ pipeline {
 
 	agent any
 
+	environment {
+		MAVEN_HOME = "/Users/michaelsv/.sdkman/candidates/maven/3.8.1/"
+	}
+
+	
 	stages {
 		
 		stage ("Clone") {
@@ -39,7 +44,7 @@ pipeline {
 			steps {
 				
 				rtMavenRun (
-					tool: 'maven 3.8.1', // Tool name from Jenkins configuration
+					//tool: 'maven 3.8.1', // Tool name from Jenkins configuration
 					pom: 'pom.xml',
 					goals: 'clean install -DskipTests',
 					resolverId: "MAVEN_RESOLVER",
