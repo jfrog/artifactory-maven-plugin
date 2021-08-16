@@ -29,12 +29,14 @@ pipeline {
 				rtMavenDeployer (
 					id: "MAVEN_DEPLOYER",
 					serverId: "ci-setup-cmd",
-					https://michaelsv.jfrog.io/artifactory/	
+					releaseRepo: "default-maven-local",
+					snapshotRepo: "default-maven-local"	
 				)
 				rtMavenResolver (
-					id: "MAVEN_DEPLOYER",
+					id: "MAVEN_RESOLVER",
 					serverId: "ci-setup-cmd",
-					https://michaelsv.jfrog.io/artifactory/
+					releaseRepo: "default-maven-virtual",
+					snapshotRepo: "default-maven-virtual"
 				)
 			}
 		}
