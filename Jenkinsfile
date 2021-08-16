@@ -4,7 +4,6 @@ pipeline {
 
 	
 	environment {
-		MAVEN_HOME = "/Users/michaelsv/.sdkman/candidates/maven/3.8.1/"
 	}
 
 	
