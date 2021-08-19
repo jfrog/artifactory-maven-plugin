@@ -3,7 +3,7 @@ pipeline {
 	agent any
 
 	environment {
-		MAVEN_HOME = "/Users/michaelsv/.sdkman/candidates/maven/3.8.1/"
+		M2_HOME = "/Users/michaelsv/.sdkman/candidates/maven/3.8.1/"
 	}
 
 	
