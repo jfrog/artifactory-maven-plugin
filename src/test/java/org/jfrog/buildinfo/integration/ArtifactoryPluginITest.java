@@ -148,6 +148,7 @@ public class ArtifactoryPluginITest extends TestCase {
 
     private void runProject(String projectName) throws VerificationException, IOException {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/integration/" + projectName);
+        // Prepare the .git environment for the test, if needed
         if (Files.exists(testDir.toPath().resolve("dotgit"))) {
             Files.move(testDir.toPath().resolve("dotgit"), testDir.toPath().resolve(".git"));
         }

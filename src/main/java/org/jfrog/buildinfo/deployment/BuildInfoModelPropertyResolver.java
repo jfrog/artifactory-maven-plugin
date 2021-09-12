@@ -109,7 +109,7 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
         try {
             vcs(Lists.newArrayList(GitUtils.extractVcs(session.getCurrentProject().getBasedir(), new ArtifactoryMavenLogger(logger))));
         } catch (IOException e) {
-            logger.warn("Couldn't extract VCS information: " + ExceptionUtils.getRootCauseMessage(e));
+            throw new RuntimeException("Couldn't extract VCS information: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
