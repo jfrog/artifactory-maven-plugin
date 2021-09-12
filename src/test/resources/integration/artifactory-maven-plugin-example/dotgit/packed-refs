@@ -1,0 +1,89 @@
+# pack-refs with: peeled fully-peeled sorted 
+9d0d303dbc82131a1f1dc20dcbd04c531089d944 refs/remotes/origin/REL-BRANCH-multi-3.7
+cbd575903b1611556af36e2b8a3588585c47adea refs/remotes/origin/dependabot/maven/artifactory-maven-plugin-example/multi1/commons-io-commons-io-2.7
+046cfdd63af6d5b3bbb1bb14d350f190b3881dea refs/remotes/origin/dependabot/maven/circleci-example/circleci-generic-artifactory/multi1/commons-io-commons-io-2.7
+8dd9c7e6a4da68a9a2d5215de67b70c071b9b5e2 refs/remotes/origin/dependabot/maven/circleci-example/circleci-mvn-artifactory/multi1/commons-io-commons-io-2.7
+d5d0076a151636312fcff4c65a8502a8a57a40ac refs/remotes/origin/dependabot/maven/droneci-examples/drone-maven/multi1/commons-io-commons-io-2.7
+193fc91c5ead5d1455e2bfdb06da7560580b645d refs/remotes/origin/dependabot/maven/gitlabci-example/gitlabci-maven-artifactory/multi1/commons-io-commons-io-2.7
+6d71e42ad0a6ae695c0af3716b5c534b614a1fb9 refs/remotes/origin/dependabot/maven/maven-example/multi1/commons-io-commons-io-2.7
+576f8bde4fcc6f42bbb5ff8b6d7ec72c66a475c5 refs/remotes/origin/dependabot/maven/maven-examples/maven-example/multi1/commons-io-commons-io-2.7
+d7a2ff6bfce85f4628f25358e09d3f6a17ebb298 refs/remotes/origin/dependabot/pip/circleci-example/circleci-python-artifactory/pyyaml-5.4
+9d22463a8327ca12045dea7c98fe24f92e817551 refs/remotes/origin/master
+b1f2a0d1f0013c6240383a51150a7ebc71201b6c refs/remotes/origin/openshift-s2i-examples
+2d5014624b314fdb54c2ffd4332c2da16651dcdd refs/remotes/origin/test-branch
+90486003ffd320136945325d6c0c56585c25b245 refs/tags/BADATCOMPUTER-multi-3.7
+^92ed53709c963b61d90a8fe1d4c6274ed3b9bd57
+4224d87dd2d524732836f22b44554def2edd395d refs/tags/BLUEJUH-multi-3.7
+^34e213833538e1fc46238342e9b86b1736245c31
+bff424e7fd467756b6b36ad930378a1def7c35f1 refs/tags/DEVOPSPROSIVA-multi-3.7
+^9a038935f5a3898accd82e96ab92602eebe2dfcc
+b4054a248971c2894909c3a7a1e4b9c496a10bec refs/tags/DOCKERAPPvmulti-3.11
+^a4aecb5dd283961ca7140dc30fb06fc90c94046b
+d5ca6644856514623f657b6cd840c66145dfd610 refs/tags/LYQWATERWAY-multi-3.103
+^fb2726d6691753ca262d7f4b5dc60f608e8e64c4
+7b6658337a5bd07c02e7f2ee9578d0942440f401 refs/tags/MANSIMRAN-multi-3.7
+^0d938eb024791f1ec828641db22aba30f37c9446
+46cf85648528432a7a3edf5d10dc85f845df43b1 refs/tags/MARKGALPIN-multi-3.10
+^ccd52ff89def3ce78c9d9832de5078a9b6afa79d
+fdc41bbc31e0531f000291e8ae8adf4651e93903 refs/tags/MARKGALPIN-multi-3.11
+^8c798ef8703ee05c02754fa91164bb6f212ad10d
+50538ad569f84160139b30cfc1372b36f9b0819d refs/tags/MARKGALPIN-multi-3.12
+^8cdee3a867ec5fdb6810904fb9606f77ec5a0983
+4dfdce9e474c5b05bb13c4d7907ae376751335ba refs/tags/MARKGALPIN2-multi-3.12
+^02c5b009f112875b48bd0da7314393fe04c3f18e
+a9b30e14ff707e4c8ae70151e1e060c605dddde6 refs/tags/MARKGALPINmulti-3.9
+^95c2a2fa82a1db8dcc6dc78fd9b1c5dee57fd49c
+6349094e00dc383517bddcf32ba5c77b5b4311e6 refs/tags/MISHESKA-multi-3.7
+^49bab3b8ecd3bd18a04ce47ed846bd180b6b8747
+0872b756a010ebed5b5d8a11fe62d576eaadc97e refs/tags/NATEFAERBER-multi-3.7
+^c3ed5ec379208e8726628ebe6957c8b2532a7ff7
+ba2b3e82eb0cd5c150d863745e6a7525134be16f refs/tags/NATEFAERBER-multi-3.8
+^63ba55f4b65f854984cca137c3ecd473052bed38
+be7cd62a470400d7feae61ff242cdb5d6611efbf refs/tags/RUNDERWO-multi-3.7
+^20a910752d80a59a7f81cc24348f8e47c9dd808d
+536eb2e4a7d64f18ceab9bfabf404fdb45cfa3e3 refs/tags/RUNDERWO-multi-3.8
+^3b860b53583046ef0f1544f41a5e1a58c440d775
+b12f3f19da28d5c13a19d0d8239cf643f5352b69 refs/tags/STANLEYF-multi-3.14
+^00307437ba799f948a95b107f800e162754e1883
+ddb8c53878d66645b3fa01f0b9bef6f2284e8091 refs/tags/STANLEYF-multi-3.7
+^a878716ddbcd0b7f7114f301332031e8fe247433
+dbee7d07368ce7d87dc002b8f90f3fd128e4c7a3 refs/tags/STANLEYF-multi-3.8
+^aecdaa94dfd43fc49777bb96b4657a12b2dc7391
+41c9540c8f1895f447e69297e0372667b6c006a2 refs/tags/WQWATERWAY-multi-3.103
+^1d7b518e26ede2bd62e1102c9a44981a12bf0d6b
+120eda43701c1bde2e6bdcc1a3bd96c313f12d16 refs/tags/davidwoon-multi-3.7
+^b67abae877f672a1fa767357a76f38747ebb9c0e
+22903bfc95ed06878f268e979be0d889de7c5be5 refs/tags/kvuong30multi-3.18
+^ea0553bd5c798a7fbbf7415847dcfa88f10763b1
+4f916ea04126f53f4da385ecfc6078cd90c2b899 refs/tags/kvuong30multi-3.20
+^7c5d53d5221048d93d73199968a086c088bff409
+e764880082056d79df77c047ffe6fdcaffa9be5b refs/tags/kvuong30multi-3.23
+^0d28ae6e3b0258b4c00fbb2f36b5b81fca4ecefa
+1aae47beba16fee7f12b740acb107b5cb4942726 refs/tags/kvuong30multi-3.24
+^8e25f7e2ca6054ae0b93c6e2748cb99d281faa8d
+dd052bb5d211898d5196cc8a114002ae62896db3 refs/tags/kvuong30multi-3.25
+^bb3a34226356313caa70b7701d1c653d41411989
+0b8bc237eabd7c9e507e308a22a1f01fd7db53ac refs/tags/markgalpin-3.8
+^b18cb8a4f5d891ae5ca6948fa61c84fb503b7fbf
+95c306e0c8886ea51f3f61a21fcbcff351badc77 refs/tags/multi-3.10
+^6bfa69c1ab12ea106ed38c44b8236dff386b2911
+93e00bda88760da18369b8fdaa65b3fab3140520 refs/tags/multi-3.7
+^4b3e12f9edfa7408975b7bd6c94acfb1ab6ffa0a
+acb1bf29d0cf5e1ef0a2e20fc309f16aecc10c1d refs/tags/multi-3.9
+^8af3a427c0124e5ff9d1afb5600cbf796cb57389
+0b50109cc70170d387590f979a05b9d8a8d5c66a refs/tags/multi-6.12
+^bf9a8a9f41f307706d6df8765ccf5985044439da
+4922f68ddb0e17cc7226f842609f776abd46e20e refs/tags/multi-6.13
+^5e8ee40d5385ca61a588f0ae7a833fb9b4873c7a
+ac920cd36f11da1857614002882c8cf6c85a219d refs/tags/multi-6.14
+^739136166884489c97b490312a9638c783d4c4e9
+070a014724f2be00b1b93e0462a5748201c69593 refs/tags/multi-6.15
+^3b9d9e239dd37ae9002ac097caae0df774ba64a1
+4c3b825ec8a26d16eda1cebd89c5f730a2b867dd refs/tags/multi-6.16
+^b39f266efc676dd6c90b90837bb0d6da3f1dd055
+48aab09b21ce0767b47a034c28829894a5ffb886 refs/tags/multi-6.17
+^7c3913660f1fb1c9427093776e54043d3a639d88
+2d1e13230ff3e631eb3637a9f86a50e2013412e2 refs/tags/multi-6.18
+^cab5e6bbdc60ebe9d685cd03f61f00517994c701
+4a43c91e650604faca197d737f5e68e327959736 refs/tags/swong001-multi-3.7
+^1ce6bd94460a3cf3ffe5e86371e74aae113b8082
