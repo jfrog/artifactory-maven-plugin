@@ -20,36 +20,6 @@
         <skipITs>true</skipITs>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>releases</id>
-            <name>jfrog-dependencies</name>
-            <url>https://oss.jfrog.org/artifactory/jfrog-dependencies</url>
-        </repository>
-        <repository>
-            <snapshots/>
-            <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>releases</id>
-            <name>jfrog-dependencies</name>
-            <url>https://oss.jfrog.org/artifactory/jfrog-dependencies</url>
-        </pluginRepository>
-        <pluginRepository>
-            <snapshots/>
-            <id>snapshots</id>
-            <name>plugins-snapshot</name>
-            <url>https://oss.jfrog.org/artifactory/plugins-snapshot</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
