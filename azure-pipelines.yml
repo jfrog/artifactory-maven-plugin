@@ -28,8 +28,8 @@ steps:
       {
         "files": [
           {
-            "pattern": "*",
-            "target": "MichaelTest/*"
+            "pattern": "MichaelTest/*",
+            "target": "./"
           }
         ]
       }
