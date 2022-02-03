@@ -33,7 +33,7 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
     }
 
     /**
-     * Resolve mandatory properties - build-name build-number and build-started.
+     * Resolve mandatory properties - build-name, build-number, project and build-started.
      *
      * @param session    - The current maven session to extract the start time
      * @param clientConf - Artifactory client configuration
@@ -41,13 +41,16 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
     private void resolveCoreProperties(MavenSession session, ArtifactoryClientConfiguration clientConf) {
         String buildNumber = StringUtils.defaultIfBlank(clientConf.info.getBuildNumber(), Long.toString(System.currentTimeMillis()));
         number(buildNumber);
-
+        setProject(clientConf.info.getProject());
         long buildStartTime = session.getRequest().getStartTime().getTime();
         String buildStarted = StringUtils.defaultIfBlank(clientConf.info.getBuildStarted(), Build.formatBuildStarted(buildStartTime));
         started(buildStarted);
 
         logResolvedProperty(BUILD_NAME, super.name);
         logResolvedProperty(BUILD_NUMBER, buildNumber);
+        if (StringUtils.isNotBlank(super.project)) {
+            logResolvedProperty(BUILD_PROJECT, super.project);
+        }
         logResolvedProperty(BUILD_STARTED, buildStarted);
     }
 

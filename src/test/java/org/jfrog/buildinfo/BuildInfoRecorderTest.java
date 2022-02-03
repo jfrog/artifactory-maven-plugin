@@ -46,6 +46,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         // Check build details
         assertEquals("buildName", build.getName());
         assertEquals("1", build.getNumber());
+        assertEquals("micprj", build.getProject());
         assertEquals("1.0.1", build.getVersion());
         assertEquals("agentName", build.getAgent().getName());
         assertEquals("2", build.getAgent().getVersion());
