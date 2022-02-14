@@ -14,12 +14,12 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ProjectArtifactMetadata;
 import org.apache.maven.repository.legacy.metadata.ArtifactMetadata;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.Dependency;
-import org.jfrog.build.api.builder.ArtifactBuilder;
-import org.jfrog.build.api.builder.BuildInfoMavenBuilder;
-import org.jfrog.build.api.builder.DependencyBuilder;
-import org.jfrog.build.api.builder.ModuleBuilder;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.Dependency;
+import org.jfrog.build.extractor.builder.ArtifactBuilder;
+import org.jfrog.build.extractor.builder.DependencyBuilder;
+import org.jfrog.build.extractor.builder.ModuleBuilder;
+import org.jfrog.build.extractor.builder.BuildInfoMavenBuilder;
 import org.jfrog.build.extractor.BuildInfoExtractor;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
@@ -127,7 +127,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      */
     @Override
     public void sessionEnded(ExecutionEvent event) {
-        Build build = extract(event);
+        BuildInfo build = extract(event);
         if (build != null) {
             buildDeployer.deploy(build, conf, deployableArtifacts);
         }
@@ -143,7 +143,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      * @return - The build info object
      */
     @Override
-    public Build extract(ExecutionEvent event) {
+    public BuildInfo extract(ExecutionEvent event) {
         MavenSession session = event.getSession();
         if (session.getResult().hasExceptions()) {
             return null;
@@ -259,7 +259,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
                 }
             }
 
-            org.jfrog.build.api.Artifact artifact = new ArtifactBuilder(artifactName).type(type).build();
+            org.jfrog.build.extractor.ci.Artifact artifact = new ArtifactBuilder(artifactName).type(type).build();
             String groupId = moduleArtifact.getGroupId();
             String deploymentPath = getDeploymentPath(groupId, artifactId, artifactVersion, artifactClassifier, artifactExtension);
             if (isFile(artifactFile)) {
@@ -323,7 +323,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         }
 
         ArtifactBuilder artifactBuilder = new ArtifactBuilder(pomFileName).type("pom");
-        org.jfrog.build.api.Artifact pomArtifact = artifactBuilder.build();
+        org.jfrog.build.extractor.ci.Artifact pomArtifact = artifactBuilder.build();
         boolean pathConflicts = PatternMatcher.pathConflicts(deploymentPath, patterns);
         addArtifactToBuildInfo(moduleBuilder, pomArtifact, pathConflicts, excludeArtifactsFromBuild);
         addDeployableArtifact(moduleBuilder, pomArtifact, pomFile, pathConflicts, nonPomArtifact.getGroupId(),
@@ -340,7 +340,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      * @param pathConflicts                      - If true, consider adding the artifact to the excluded artifacts list
      * @param isFilterExcludedArtifactsFromBuild - If true and the artifacts should be excluded, add the artifact to the excluded artifacts list
      */
-    private void addArtifactToBuildInfo(ModuleBuilder module, org.jfrog.build.api.Artifact artifact, boolean pathConflicts, boolean isFilterExcludedArtifactsFromBuild) {
+    private void addArtifactToBuildInfo(ModuleBuilder module, org.jfrog.build.extractor.ci.Artifact artifact, boolean pathConflicts, boolean isFilterExcludedArtifactsFromBuild) {
         if (isFilterExcludedArtifactsFromBuild && pathConflicts) {
             module.addExcludedArtifact(artifact);
             return;
@@ -361,7 +361,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      * @param classifier    - The artifact's classifier
      * @param fileExtension - The file extension, for example - 'jar' or 'pom'
      */
-    private void addDeployableArtifact(ModuleBuilder module, org.jfrog.build.api.Artifact artifact, File artifactFile, boolean pathConflicts,
+    private void addDeployableArtifact(ModuleBuilder module, org.jfrog.build.extractor.ci.Artifact artifact, File artifactFile, boolean pathConflicts,
                                        String groupId, String artifactId, String version, String classifier, String fileExtension) {
         if (pathConflicts) {
             logger.info("'" + artifact.getName() + "' will not be deployed due to the defined include-exclude patterns.");

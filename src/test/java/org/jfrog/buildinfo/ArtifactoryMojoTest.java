@@ -2,7 +2,7 @@ package org.jfrog.buildinfo;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
-import org.jfrog.build.api.BuildInfoFields;
+import org.jfrog.build.extractor.ci.BuildInfoFields;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 
 import java.util.List;

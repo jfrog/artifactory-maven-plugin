@@ -5,7 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.Maven;
 import org.apache.maven.plugin.logging.Log;
-import org.jfrog.build.api.BaseBuildFileBean;
+import org.jfrog.build.extractor.ci.BaseBuildFileBean;
 import org.jfrog.build.api.util.FileChecksumCalculator;
 import org.jfrog.buildinfo.ArtifactoryMojo;
 

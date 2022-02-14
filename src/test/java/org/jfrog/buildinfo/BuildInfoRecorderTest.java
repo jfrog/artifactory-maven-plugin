@@ -4,10 +4,10 @@ import com.google.common.collect.Sets;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.ExecutionEvent;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.Dependency;
-import org.jfrog.build.api.Module;
-import org.jfrog.build.api.builder.BuildInfoBuilder;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.Dependency;
+import org.jfrog.build.extractor.ci.Module;
+import org.jfrog.build.extractor.builder.BuildInfoBuilder;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.types.TestExecutionEvent;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         buildInfoRecorder.projectSucceeded(executionEvent);
         BuildInfoBuilder buildInfoBuilder = buildInfoRecorder.getBuildInfoBuilder();
         assertNotNull(buildInfoBuilder);
-        Build build = buildInfoBuilder.build();
+        BuildInfo build = buildInfoBuilder.build();
 
         // Check build details
         assertEquals("buildName", build.getName());
@@ -62,9 +62,9 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertEquals("value", module.getProperties().getProperty("test.property.key"));
 
         // Check artifact
-        List<org.jfrog.build.api.Artifact> artifacts = module.getArtifacts();
+        List<org.jfrog.build.extractor.ci.Artifact> artifacts = module.getArtifacts();
         assertEquals(1, artifacts.size());
-        org.jfrog.build.api.Artifact artifact = artifacts.get(0);
+        org.jfrog.build.extractor.ci.Artifact artifact = artifacts.get(0);
         assertEquals("unit-tests-pom-1.0.0.pom", artifact.getName());
         assertEquals("pom", artifact.getType());
 
@@ -82,7 +82,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         Properties properties = new Properties();
         properties.put(BUILD_INFO_ENVIRONMENT_PREFIX + "testPropertyKey", "testPropertyValue");
         mojo.artifactory.delegate.fillFromProperties(properties);
-        Build build = buildInfoRecorder.extract(executionEvent);
+        BuildInfo build = buildInfoRecorder.extract(executionEvent);
         assertNotNull(build);
         assertTrue(build.getDurationMillis() > 0);
         assertEquals("testPropertyValue", build.getProperties().get(BUILD_INFO_ENVIRONMENT_PREFIX + "testPropertyKey"));

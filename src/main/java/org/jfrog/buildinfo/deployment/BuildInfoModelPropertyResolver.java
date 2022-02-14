@@ -3,11 +3,11 @@ package org.jfrog.buildinfo.deployment;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
-import org.jfrog.build.api.Agent;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.BuildAgent;
-import org.jfrog.build.api.MatrixParameter;
-import org.jfrog.build.api.builder.BuildInfoMavenBuilder;
+import org.jfrog.build.extractor.ci.Agent;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.BuildAgent;
+import org.jfrog.build.extractor.ci.MatrixParameter;
+import org.jfrog.build.extractor.builder.BuildInfoMavenBuilder;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 
 import static org.jfrog.build.api.BuildInfoFields.*;
@@ -43,7 +43,7 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
         number(buildNumber);
         setProject(clientConf.info.getProject());
         long buildStartTime = session.getRequest().getStartTime().getTime();
-        String buildStarted = StringUtils.defaultIfBlank(clientConf.info.getBuildStarted(), Build.formatBuildStarted(buildStartTime));
+        String buildStarted = StringUtils.defaultIfBlank(clientConf.info.getBuildStarted(), BuildInfo.formatBuildStarted(buildStartTime));
         started(buildStarted);
 
         logResolvedProperty(BUILD_NAME, super.name);

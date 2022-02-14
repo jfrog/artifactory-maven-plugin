@@ -3,9 +3,9 @@ package org.jfrog.buildinfo.deployment;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.maven.plugin.logging.Log;
-import org.jfrog.build.api.Artifact;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.Module;
+import org.jfrog.build.extractor.ci.Artifact;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.Module;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
 import org.jfrog.build.extractor.ModuleParallelDeployHelper;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
@@ -41,7 +41,7 @@ public class BuildDeployer {
      * @param clientConf          - Artifactory client configuration
      * @param deployableArtifacts - The deployable artifacts
      */
-    public void deploy(Build build, ArtifactoryClientConfiguration clientConf, Map<String, DeployDetails> deployableArtifacts) {
+    public void deploy(BuildInfo build, ArtifactoryClientConfiguration clientConf, Map<String, DeployDetails> deployableArtifacts) {
         Map<String, Set<DeployDetails>> deployableArtifactsByModule = prepareDeployableArtifacts(build.getModules(), deployableArtifacts);
         boolean isDeployArtifacts = isDeployArtifacts(clientConf, deployableArtifactsByModule);
         boolean isPublishBuildInfo = isPublishBuildInfo(clientConf);
