@@ -5,11 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
-import org.jfrog.build.api.Agent;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.BuildAgent;
-import org.jfrog.build.api.MatrixParameter;
-import org.jfrog.build.api.builder.BuildInfoMavenBuilder;
+import org.jfrog.build.extractor.ci.Agent;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.BuildAgent;
+import org.jfrog.build.extractor.ci.MatrixParameter;
+import org.jfrog.build.extractor.builder.BuildInfoMavenBuilder;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 import org.jfrog.build.extractor.clientConfiguration.util.GitUtils;
 import org.jfrog.buildinfo.utils.ArtifactoryMavenLogger;
@@ -40,7 +40,7 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
     }
 
     /**
-     * Resolve mandatory properties - build-name build-number and build-started.
+     * Resolve mandatory properties - build-name, build-number, project and build-started.
      *
      * @param session    - The current maven session to extract the start time
      * @param clientConf - Artifactory client configuration
@@ -48,13 +48,16 @@ public class BuildInfoModelPropertyResolver extends BuildInfoMavenBuilder {
     private void resolveCoreProperties(MavenSession session, ArtifactoryClientConfiguration clientConf) {
         String buildNumber = StringUtils.defaultIfBlank(clientConf.info.getBuildNumber(), Long.toString(System.currentTimeMillis()));
         number(buildNumber);
-
+        setProject(clientConf.info.getProject());
         long buildStartTime = session.getRequest().getStartTime().getTime();
-        String buildStarted = StringUtils.defaultIfBlank(clientConf.info.getBuildStarted(), Build.formatBuildStarted(buildStartTime));
+        String buildStarted = StringUtils.defaultIfBlank(clientConf.info.getBuildStarted(), BuildInfo.formatBuildStarted(buildStartTime));
         started(buildStarted);
 
         logResolvedProperty(BUILD_NAME, super.name);
         logResolvedProperty(BUILD_NUMBER, buildNumber);
+        if (StringUtils.isNotBlank(super.project)) {
+            logResolvedProperty(BUILD_PROJECT, super.project);
+        }
         logResolvedProperty(BUILD_STARTED, buildStarted);
     }
 

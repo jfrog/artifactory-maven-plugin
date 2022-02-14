@@ -2,7 +2,7 @@ package org.jfrog.buildinfo;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
-import org.jfrog.build.api.BuildInfoFields;
+import org.jfrog.build.extractor.ci.BuildInfoFields;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 
 import java.util.List;
@@ -63,6 +63,7 @@ public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
         assertEquals("http://1.2.3.4", buildInfo.getBuildUrl());
         assertEquals("buildName", buildInfo.getBuildName());
         assertEquals("1", buildInfo.getBuildNumber());
+        assertEquals("micprj", buildInfo.getProject());
         assertEquals("agentName", buildInfo.getAgentName());
         assertEquals("2", buildInfo.getAgentVersion());
         assertEquals(5, buildInfo.getBuildRetentionDays().intValue());

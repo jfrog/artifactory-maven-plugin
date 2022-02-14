@@ -52,6 +52,7 @@
                             <buildInfo>
                                 <buildName>buildName</buildName>
                                 <buildNumber>1</buildNumber>
+                                <project>micprj</project>
                                 <buildUrl>http://1.2.3.4</buildUrl>
                                 <agentName>agentName</agentName>
                                 <agentVersion>2</agentVersion>

@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.jfrog.build.api.Build;
-import org.jfrog.build.api.Module;
-import org.jfrog.build.api.Vcs;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.Module;
+import org.jfrog.build.extractor.ci.Vcs;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.RequestDefinition;
@@ -79,7 +79,7 @@ public class ArtifactoryPluginITest extends TestCase {
             checkDeployedArtifacts(mockServer, MULTI_MODULE_3_ARTIFACTS);
 
             // Extract build from request
-            Build build = getAndAssertBuild(mockServer);
+            BuildInfo build = getAndAssertBuild(mockServer);
 
             // Check project specific fields
             assertEquals("plugin-demo", build.getName());
@@ -127,7 +127,7 @@ public class ArtifactoryPluginITest extends TestCase {
             initializeMockServer(mockServer);
             runProject("maven-archetype-simple");
             checkDeployedArtifacts(mockServer, MAVEN_ARC_ARTIFACTS);
-            Build build = getAndAssertBuild(mockServer);
+            BuildInfo build = getAndAssertBuild(mockServer);
 
             // Check project specific fields
             assertEquals("maven-archetype-simple", build.getName());
@@ -199,7 +199,7 @@ public class ArtifactoryPluginITest extends TestCase {
      * @return the build info
      * @throws JsonProcessingException - In case of parsing error
      */
-    private Build getAndAssertBuild(ClientAndServer mockServer) throws JsonProcessingException {
+    private BuildInfo getAndAssertBuild(ClientAndServer mockServer) throws JsonProcessingException {
         RequestDefinition[] requestDefinitions = mockServer.retrieveRecordedRequests(request("/artifactory/api/build"));
         assertEquals(1, ArrayUtils.getLength(requestDefinitions));
         RequestDefinition buildInfoRequest = requestDefinitions[0];
@@ -207,7 +207,7 @@ public class ArtifactoryPluginITest extends TestCase {
         JsonNode buildInfoRequestNode = mapper.readTree(buildInfoRequest.toString());
         JsonNode body = buildInfoRequestNode.get("body");
         JsonNode json = body.get("json");
-        Build build = mapper.readValue(json.toString(), Build.class);
+        BuildInfo build = mapper.readValue(json.toString(), BuildInfo.class);
         assertNotNull(build);
 
         // Check common fields
