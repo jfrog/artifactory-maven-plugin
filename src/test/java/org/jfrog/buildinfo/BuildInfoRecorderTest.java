@@ -1,6 +1,7 @@
 package org.jfrog.buildinfo;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.ExecutionEvent;
@@ -53,6 +54,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertTrue(build.getStarted().startsWith("2020-01-01T00:00:00.000"));
         assertEquals(0, build.getDurationMillis());
         assertEquals("http://1.2.3.4", build.getUrl());
+        assertFalse(CollectionUtils.isEmpty(build.getVcs()));
 
         // Check module
         List<Module> modules = build.getModules();

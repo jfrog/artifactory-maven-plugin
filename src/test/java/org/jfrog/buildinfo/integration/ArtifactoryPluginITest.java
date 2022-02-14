@@ -21,9 +21,8 @@ import org.mockserver.model.RequestDefinition;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.util.*;
 
 import static org.mockserver.model.HttpRequest.request;
 
@@ -86,6 +85,12 @@ public class ArtifactoryPluginITest extends TestCase {
             assertTrue(StringUtils.isNotBlank(build.getNumber()));
             assertEquals("http://build-url.org", build.getUrl());
 
+            // Check VCS
+            List<Vcs> vcs = build.getVcs();
+            assertFalse(CollectionUtils.isEmpty(vcs));
+            assertEquals("https://github.com/jfrog/project-examples.git", vcs.get(0).getUrl());
+            assertEquals("9d22463a8327ca12045dea7c98fe24f92e817551", vcs.get(0).getRevision());
+
             // Check parent module
             Module parent = build.getModule("org.jfrog.test:multi:3.7-SNAPSHOT");
             assertNotNull(parent);
@@ -130,7 +135,7 @@ public class ArtifactoryPluginITest extends TestCase {
             // Check module
             Module module = build.getModule("org.example:maven-archetype-simple:1.0-SNAPSHOT");
             assertEquals(MAVEN_ARC_ARTIFACTS.length, CollectionUtils.size(module.getArtifacts()));
-            assertEquals(209, CollectionUtils.size(module.getDependencies()));
+            assertNotSame(Collections.EMPTY_LIST, module.getDependencies());
             assertEquals(4, CollectionUtils.size(module.getProperties()));
         }
     }
@@ -142,6 +147,10 @@ public class ArtifactoryPluginITest extends TestCase {
 
     private void runProject(String projectName) throws VerificationException, IOException {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/integration/" + projectName);
+        // Prepare the .git environment for the test, if needed
+        if (Files.exists(testDir.toPath().resolve("dotgit"))) {
+            Files.move(testDir.toPath().resolve("dotgit"), testDir.toPath().resolve(".git"));
+        }
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         if (StringUtils.equalsIgnoreCase(System.getProperty("debugITs"), "true")) {
             verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
