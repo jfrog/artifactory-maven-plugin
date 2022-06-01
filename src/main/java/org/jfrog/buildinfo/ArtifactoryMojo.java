@@ -11,7 +11,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectDependenciesResolver;
 import org.jfrog.build.extractor.ci.BuildInfoFields;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 import org.jfrog.build.extractor.clientConfiguration.ClientProperties;
@@ -20,7 +19,6 @@ import org.jfrog.buildinfo.resolution.RepositoryListener;
 import org.jfrog.buildinfo.resolution.ResolutionRepoHelper;
 import org.jfrog.buildinfo.utils.Utils;
 
-import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +60,6 @@ public class ArtifactoryMojo extends AbstractMojo {
 
     @Parameter
     Config.Resolver resolver = new Config.Resolver();
-
-    @Inject
-    private ProjectDependenciesResolver dependenciesResolver;
 
     @Override
     public void execute() {
@@ -108,7 +103,7 @@ public class ArtifactoryMojo extends AbstractMojo {
         skipDefaultDeploy();
         completeConfig();
         addDeployProperties();
-        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate, dependenciesResolver);
+        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate);
         repositoryListener.setBuildInfoRecorder(executionListener);
         session.getRequest().setExecutionListener(executionListener);
     }
