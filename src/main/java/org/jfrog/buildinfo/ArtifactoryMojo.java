@@ -121,7 +121,10 @@ public class ArtifactoryMojo extends AbstractMojo {
      * Skip the default maven deploy behaviour.
      */
     private void skipDefaultDeploy() {
-        session.getUserProperties().put("maven.deploy.skip", Boolean.TRUE.toString());
+        if(publisher.isPublishArtifacts())
+        {
+            session.getUserProperties().put("maven.deploy.skip", Boolean.TRUE.toString());
+        }
     }
 
     /**
