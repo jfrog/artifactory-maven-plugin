@@ -2,8 +2,9 @@ package org.jfrog.buildinfo.deployment;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.AbstractExecutionListener;
@@ -14,14 +15,14 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ProjectArtifactMetadata;
 import org.apache.maven.repository.legacy.metadata.ArtifactMetadata;
-import org.jfrog.build.extractor.ci.BuildInfo;
-import org.jfrog.build.extractor.ci.Dependency;
-import org.jfrog.build.extractor.builder.ArtifactBuilder;
-import org.jfrog.build.extractor.builder.DependencyBuilder;
-import org.jfrog.build.extractor.builder.ModuleBuilder;
-import org.jfrog.build.extractor.builder.BuildInfoMavenBuilder;
 import org.jfrog.build.extractor.BuildInfoExtractor;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
+import org.jfrog.build.extractor.builder.ArtifactBuilder;
+import org.jfrog.build.extractor.builder.BuildInfoMavenBuilder;
+import org.jfrog.build.extractor.builder.DependencyBuilder;
+import org.jfrog.build.extractor.builder.ModuleBuilder;
+import org.jfrog.build.extractor.ci.BuildInfo;
+import org.jfrog.build.extractor.ci.Dependency;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 import org.jfrog.build.extractor.clientConfiguration.IncludeExcludePatterns;
 import org.jfrog.build.extractor.clientConfiguration.PatternMatcher;
@@ -77,7 +78,12 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         conf.getAllProperties().replaceAll((key, value) -> Utils.parseInput(value));
 
         // Fill currentModuleArtifacts
-        addArtifacts(project);
+        if (BooleanUtils.toBoolean(project.getProperties().getProperty("maven.deploy.skip"))) {
+            logger.info("The artifacts of module '" + project.getArtifactId() +
+                    "' will not be deployed because 'maven.deploy.skip' property is true.");
+        } else {
+            addArtifacts(project);
+        }
 
         // Fill currentModuleDependencies
         addDependencies(project);
