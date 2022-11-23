@@ -1,0 +1,13 @@
+---
+name: "❓ Question"
+description: Ask a question
+title: ""
+labels: [ question ]
+assignees: [ ]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: How can we help?
+    validations:
+      required: true
