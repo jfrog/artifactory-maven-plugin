@@ -73,10 +73,10 @@ public class ArtifactoryPluginITest extends TestCase {
             runProject("artifactory-maven-plugin-example");
 
             // Check deployed artifacts
-            checkDeployedArtifacts(mockServer, MULTI_MODULE_ARTIFACTS);
-            checkDeployedArtifacts(mockServer, MULTI_MODULE_1_ARTIFACTS);
-            checkDeployedArtifacts(mockServer, MULTI_MODULE_2_ARTIFACTS);
-            checkDeployedArtifacts(mockServer, MULTI_MODULE_3_ARTIFACTS);
+            checkDeployedArtifacts(mockServer, MULTI_MODULE_ARTIFACTS, true);
+            checkDeployedArtifacts(mockServer, MULTI_MODULE_1_ARTIFACTS, true);
+            checkDeployedArtifacts(mockServer, MULTI_MODULE_2_ARTIFACTS, true);
+            checkDeployedArtifacts(mockServer, MULTI_MODULE_3_ARTIFACTS, false);
 
             // Extract build from request
             BuildInfo build = getAndAssertBuild(mockServer);
@@ -116,9 +116,9 @@ public class ArtifactoryPluginITest extends TestCase {
             // Check multi3
             Module multi3 = build.getModule("org.jfrog.test:multi3:3.7-SNAPSHOT");
             assertNotNull(multi1);
-            assertEquals(MULTI_MODULE_3_ARTIFACTS.length, CollectionUtils.size(multi3.getArtifacts()));
+            assertEquals(0, CollectionUtils.size(multi3.getArtifacts()));
             assertEquals(15, CollectionUtils.size(multi3.getDependencies()));
-            assertEquals(4, CollectionUtils.size(multi3.getProperties()));
+            assertEquals(5, CollectionUtils.size(multi3.getProperties()));
         }
     }
 
@@ -126,7 +126,7 @@ public class ArtifactoryPluginITest extends TestCase {
         try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
             initializeMockServer(mockServer);
             runProject("maven-archetype-simple");
-            checkDeployedArtifacts(mockServer, MAVEN_ARC_ARTIFACTS);
+            checkDeployedArtifacts(mockServer, MAVEN_ARC_ARTIFACTS, true);
             BuildInfo build = getAndAssertBuild(mockServer);
 
             // Check project specific fields
@@ -143,7 +143,7 @@ public class ArtifactoryPluginITest extends TestCase {
 
     private void initializeMockServer(ClientAndServer mockServer) {
         mockServer.when(request("/artifactory/api/system/version")).respond(HttpResponse.response("{\"version\":\"7.0.0\"}"));
-        mockServer.when(request()).respond(HttpResponse.response().withStatusCode(200).withBody("{}"));
+        mockServer.when(request()).respond(HttpResponse.response().withStatusCode(200).withBody("{\"checksums\":{}}"));
     }
 
     private void runProject(String projectName) throws VerificationException, IOException {
@@ -183,10 +183,10 @@ public class ArtifactoryPluginITest extends TestCase {
      * @param mockServer        - The mock server
      * @param expectedArtifacts - The expected artifacts
      */
-    private void checkDeployedArtifacts(ClientAndServer mockServer, String[] expectedArtifacts) {
+    private void checkDeployedArtifacts(ClientAndServer mockServer, String[] expectedArtifacts, boolean expectExist) {
         RequestDefinition[] requestDefinitions = mockServer.retrieveRecordedRequests(null);
         for (String expectedArtifact : expectedArtifacts) {
-            assertTrue(Arrays.stream(requestDefinitions)
+            assertEquals(expectExist, Arrays.stream(requestDefinitions)
                     .map(Objects::toString)
                     .anyMatch(request -> request.contains(expectedArtifact)));
         }

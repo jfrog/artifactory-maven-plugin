@@ -10,15 +10,17 @@
     <artifactId>multi3</artifactId>
     <packaging>war</packaging>
     <name>Multi 3</name>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <dependencies>
         <!-- depends on another project (should include transitive) -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>multi1</artifactId>
-           <version>${project.parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
-       
 
         <!-- runtime dependency -->
         <dependency>
