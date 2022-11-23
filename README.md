@@ -22,3 +22,7 @@ the [Maven Artifactory plugin user guide](https://www.jfrog.com/confluence/displ
 ## Release Notes
 
 The release notes are available in [Releases](https://github.com/jfrog/artifactory-maven-plugin/releases).
+
+## 💻 Contributions
+
+We welcome pull requests from the community. To help us improve this project, please read our [Contribution](./CONTRIBUTING.md#-guidelines) guide.
