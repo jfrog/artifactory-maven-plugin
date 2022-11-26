@@ -66,11 +66,19 @@ public class ArtifactoryPluginITest extends TestCase {
             "/artifactory/libs-snapshot-local/org/example/maven-archetype-simple/1.0-SNAPSHOT/maven-archetype-simple-1.0-SNAPSHOT.pom"
     };
 
+    public void testMultiModuleInstallPluginVer2() throws Exception {
+        testMultiModule("multi-module-install-plugin-2");
+    }
+
+    public void testMultiModuleInstallPluginVer3() throws Exception {
+        testMultiModule("multi-module-install-plugin-3");
+    }
+
     @SuppressWarnings("HttpUrlsUsage")
-    public void testMultiModule() throws Exception {
+    private void testMultiModule(String projectName) throws Exception {
         try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
             initializeMockServer(mockServer);
-            runProject("artifactory-maven-plugin-example");
+            runProject(projectName);
 
             // Check deployed artifacts
             checkDeployedArtifacts(mockServer, MULTI_MODULE_ARTIFACTS, true);
