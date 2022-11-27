@@ -67,10 +67,12 @@ public class ArtifactoryPluginITest extends TestCase {
     };
 
     public void testMultiModuleInstallPluginVer2() throws Exception {
+        // Test module-module project with maven-install-plugin:2.5.2
         testMultiModule("multi-module-install-plugin-2");
     }
 
     public void testMultiModuleInstallPluginVer3() throws Exception {
+        // Test module-module project with maven-install-plugin:3.1.0
         testMultiModule("multi-module-install-plugin-3");
     }
 
