@@ -13,8 +13,6 @@ import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.artifact.ProjectArtifactMetadata;
-import org.apache.maven.repository.legacy.metadata.ArtifactMetadata;
 import org.jfrog.build.extractor.BuildInfoExtractor;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
 import org.jfrog.build.extractor.builder.ArtifactBuilder;
@@ -83,13 +81,13 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
                     "' will not be deployed because 'maven.deploy.skip' property is true.");
         } else {
             addArtifacts(project);
+            addArtifactsToCurrentModule(project, moduleBuilder);
         }
 
         // Fill currentModuleDependencies
         addDependencies(project);
 
         // Build module
-        addArtifactsToCurrentModule(project, moduleBuilder);
         addDependenciesToCurrentModule(moduleBuilder);
         buildInfoBuilder.addModule(moduleBuilder.build());
 
@@ -237,8 +235,6 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         boolean excludeArtifactsFromBuild = conf.publisher.isFilterExcludedArtifactsFromBuild();
 
         boolean pomFileAdded = false;
-        Artifact nonPomArtifact = null;
-        String pomFileName = null;
 
         for (Artifact moduleArtifact : artifacts) {
             String artifactId = moduleArtifact.getArtifactId();
@@ -256,32 +252,23 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
                     // project.getFile() returns the project pom file
                     artifactFile = project.getFile();
                 }
-            } else {
-                boolean pomExist = moduleArtifact.getMetadataList().stream()
-                        .anyMatch(artifactMetadata -> artifactMetadata instanceof ProjectArtifactMetadata);
-                if (pomExist) {
-                    nonPomArtifact = moduleArtifact;
-                    pomFileName = StringUtils.removeEnd(artifactName, artifactExtension) + "pom";
-                }
             }
 
-            org.jfrog.build.extractor.ci.Artifact artifact = new ArtifactBuilder(artifactName).type(type).build();
-            String groupId = moduleArtifact.getGroupId();
-            String deploymentPath = getDeploymentPath(groupId, artifactId, artifactVersion, artifactClassifier, artifactExtension);
-            if (isFile(artifactFile)) {
-                boolean pathConflicts = PatternMatcher.pathConflicts(deploymentPath, patterns);
-                addArtifactToBuildInfo(moduleBuilder, artifact, pathConflicts, excludeArtifactsFromBuild);
-                addDeployableArtifact(moduleBuilder, artifact, artifactFile, pathConflicts, moduleArtifact.getGroupId(),
-                        artifactId, artifactVersion, artifactClassifier, artifactExtension);
+            if (!isFile(artifactFile)) {
+                continue;
             }
+            org.jfrog.build.extractor.ci.Artifact artifact = new ArtifactBuilder(artifactName).type(type).build();
+            String deploymentPath = getDeploymentPath(moduleArtifact.getGroupId(), artifactId, artifactVersion, artifactClassifier, artifactExtension);
+            boolean pathConflicts = PatternMatcher.pathConflicts(deploymentPath, patterns);
+            addArtifactToBuildInfo(moduleBuilder, artifact, pathConflicts, excludeArtifactsFromBuild);
+            addDeployableArtifact(moduleBuilder, artifact, artifactFile, pathConflicts, moduleArtifact.getGroupId(),
+                    artifactId, artifactVersion, artifactClassifier, artifactExtension);
         }
         /*
-         * In case of non packaging Pom project module, we need to create the pom file from the ProjectArtifactMetadata on the Artifact
+         * In case of non packaging Pom project module, we need to create the pom file from the project's Artifact
          */
-        if (!pomFileAdded && nonPomArtifact != null) {
-            String deploymentPath = getDeploymentPath(nonPomArtifact.getGroupId(), nonPomArtifact.getArtifactId(),
-                    nonPomArtifact.getVersion(), nonPomArtifact.getClassifier(), "pom");
-            addPomArtifact(moduleBuilder, nonPomArtifact, patterns, deploymentPath, pomFileName, excludeArtifactsFromBuild);
+        if (!pomFileAdded) {
+            addPomArtifact(project, moduleBuilder, patterns, excludeArtifactsFromBuild);
         }
     }
 
@@ -311,29 +298,17 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      *
      * @param moduleBuilder - The current Maven module
      */
-    private void addPomArtifact(ModuleBuilder moduleBuilder, Artifact nonPomArtifact, IncludeExcludePatterns patterns,
-                                String deploymentPath, String pomFileName, boolean excludeArtifactsFromBuild) {
+    private void addPomArtifact(MavenProject project, ModuleBuilder moduleBuilder, IncludeExcludePatterns patterns, boolean excludeArtifactsFromBuild) {
+        File pomFile = project.getFile();
+        Artifact projectArtifact = project.getArtifact();
+        String artifactName = getArtifactName(projectArtifact.getArtifactId(), projectArtifact.getBaseVersion(), projectArtifact.getClassifier(), "pom");
+        org.jfrog.build.extractor.ci.Artifact pomArtifact = new ArtifactBuilder(artifactName).type("pom").build();
 
-        ArtifactMetadata artifactMetadata = nonPomArtifact.getMetadataList().stream()
-                .filter(artifact -> artifact instanceof ProjectArtifactMetadata)
-                .findFirst().orElse(null);
-        if (artifactMetadata == null) {
-            // Couldn't find pom
-            return;
-        }
-
-        File pomFile = ((ProjectArtifactMetadata) artifactMetadata).getFile();
-        if (!isFile(pomFile)) {
-            // Couldn't find pom
-            return;
-        }
-
-        ArtifactBuilder artifactBuilder = new ArtifactBuilder(pomFileName).type("pom");
-        org.jfrog.build.extractor.ci.Artifact pomArtifact = artifactBuilder.build();
+        String deploymentPath = getDeploymentPath(projectArtifact.getGroupId(), projectArtifact.getArtifactId(), projectArtifact.getVersion(), projectArtifact.getClassifier(), "pom");
         boolean pathConflicts = PatternMatcher.pathConflicts(deploymentPath, patterns);
         addArtifactToBuildInfo(moduleBuilder, pomArtifact, pathConflicts, excludeArtifactsFromBuild);
-        addDeployableArtifact(moduleBuilder, pomArtifact, pomFile, pathConflicts, nonPomArtifact.getGroupId(),
-                nonPomArtifact.getArtifactId(), nonPomArtifact.getVersion(), nonPomArtifact.getClassifier(), "pom");
+        addDeployableArtifact(moduleBuilder, pomArtifact, pomFile, pathConflicts, projectArtifact.getGroupId(),
+                projectArtifact.getArtifactId(), projectArtifact.getVersion(), projectArtifact.getClassifier(), "pom");
     }
 
     /**
