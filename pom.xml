@@ -4,7 +4,7 @@
     <groupId>org.jfrog.buildinfo</groupId>
     <artifactId>artifactory-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>3.5.0</version>
+    <version>3.5.1</version>
     <name>Artifactory Maven plugin</name>
     <url>https://www.jfrog.com/confluence/display/JFROG/Maven+Artifactory+Plugin</url>
     <description>A Maven plugin to resolve artifacts from Artifactory, deploy artifacts to Artifactory, capture and
