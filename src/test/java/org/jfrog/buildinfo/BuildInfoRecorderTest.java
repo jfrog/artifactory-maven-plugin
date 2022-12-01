@@ -5,10 +5,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.ExecutionEvent;
+import org.jfrog.build.extractor.builder.BuildInfoBuilder;
 import org.jfrog.build.extractor.ci.BuildInfo;
 import org.jfrog.build.extractor.ci.Dependency;
 import org.jfrog.build.extractor.ci.Module;
-import org.jfrog.build.extractor.builder.BuildInfoBuilder;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.types.TestExecutionEvent;
 import org.junit.Before;
@@ -34,7 +34,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
     public void setUp() throws Exception {
         super.setUp();
         executionEvent = new TestExecutionEvent(mojo.session, mojo.project);
-        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate);
+        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate, mojo.dependenciesResolver);
         mojo.project.setArtifacts(Sets.newHashSet(TEST_ARTIFACT));
     }
 
@@ -78,6 +78,8 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertEquals(1, dependency.getScopes().size());
         assertTrue(dependency.getScopes().contains("compile"));
         assertEquals(TEST_ARTIFACT.getType(), dependency.getType());
+        assertEquals(null, dependency.getRequestedBy());
+
     }
 
     public void testExtract() {
