@@ -23,7 +23,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 import static org.mockserver.model.HttpRequest.request;
 
@@ -129,6 +134,13 @@ public class ArtifactoryPluginITest extends TestCase {
             assertEquals(0, CollectionUtils.size(multi3.getArtifacts()));
             assertEquals(15, CollectionUtils.size(multi3.getDependencies()));
             assertEquals(5, CollectionUtils.size(multi3.getProperties()));
+
+            Properties badProps = new Properties();
+            badProps.put("password", "password-password");
+            // Check build properties exclude
+            assertFalse(build.getProperties().contains(badProps));
+            // Check module properties exclude
+            build.getModules().forEach((value) -> assertFalse(value.getProperties().contains(badProps)));
         }
     }
 
@@ -167,7 +179,7 @@ public class ArtifactoryPluginITest extends TestCase {
             verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
         }
         verifier.getVerifierProperties().put("use.mavenRepoLocal", "false");
-        verifier.executeGoals(Lists.newArrayList("clean", "deploy", "-Dartifactory.plugin.version=" + getPluginVersion()));
+        verifier.executeGoals(Lists.newArrayList("clean", "deploy", "-Dartifactory.plugin.version=" + getPluginVersion(), "-Dpassword2=123", "-s", "settings.xml"));
         verifier.verifyErrorFreeLog();
     }
 
