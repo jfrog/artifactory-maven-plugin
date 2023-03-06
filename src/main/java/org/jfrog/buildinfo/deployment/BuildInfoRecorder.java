@@ -165,7 +165,6 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         long time = new Date().getTime() - session.getRequest().getStartTime().getTime();
         BuildInfo buildInfo = buildInfoBuilder.durationMillis(time).build();
         PackageManagerUtils.collectEnvIfNeeded(conf, buildInfo);
-        PackageManagerUtils.filterBuildInfoProperties(conf, buildInfo);
         return buildInfo;
     }
 

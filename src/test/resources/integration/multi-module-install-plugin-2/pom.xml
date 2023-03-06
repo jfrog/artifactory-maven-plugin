@@ -73,7 +73,7 @@
                             </deployProperties>
                             <artifactory>
                                 <includeEnvVars>true</includeEnvVars>
-                                <envVarsExcludePatterns>*username*,*password*,*secret*,*key*,*token*,*passphrase*
+                                <envVarsExcludePatterns>*password*,*secret*,*key*,*token*,*passphrase*
                                 </envVarsExcludePatterns>
                                 <timeoutSec>60</timeoutSec>
                             </artifactory>

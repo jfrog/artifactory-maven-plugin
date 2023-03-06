@@ -112,35 +112,28 @@ public class ArtifactoryPluginITest extends TestCase {
             assertNotNull(parent);
             assertEquals(MULTI_MODULE_ARTIFACTS.length, CollectionUtils.size(parent.getArtifacts()));
             assertEquals(0, CollectionUtils.size(parent.getDependencies()));
-            assertEquals(4, CollectionUtils.size(parent.getProperties()));
+            assertEquals(5, CollectionUtils.size(parent.getProperties()));
 
             // Check multi1
             Module multi1 = build.getModule("org.jfrog.test:multi1:3.7-SNAPSHOT");
             assertNotNull(multi1);
             assertEquals(MULTI_MODULE_1_ARTIFACTS.length, CollectionUtils.size(multi1.getArtifacts()));
             assertEquals(13, CollectionUtils.size(multi1.getDependencies()));
-            assertEquals(4, CollectionUtils.size(multi1.getProperties()));
+            assertEquals(5, CollectionUtils.size(multi1.getProperties()));
 
             // Check multi2
             Module multi2 = build.getModule("org.jfrog.test:multi2:3.7-SNAPSHOT");
             assertNotNull(multi2);
             assertEquals(MULTI_MODULE_2_ARTIFACTS.length, CollectionUtils.size(multi2.getArtifacts()));
             assertEquals(1, CollectionUtils.size(multi2.getDependencies()));
-            assertEquals(5, CollectionUtils.size(multi2.getProperties()));
+            assertEquals(6, CollectionUtils.size(multi2.getProperties()));
 
             // Check multi3
             Module multi3 = build.getModule("org.jfrog.test:multi3:3.7-SNAPSHOT");
             assertNotNull(multi1);
             assertEquals(0, CollectionUtils.size(multi3.getArtifacts()));
             assertEquals(15, CollectionUtils.size(multi3.getDependencies()));
-            assertEquals(5, CollectionUtils.size(multi3.getProperties()));
-
-            Properties badProps = new Properties();
-            badProps.put("password", "password-password");
-            // Check build properties exclude
-            assertFalse(build.getProperties().contains(badProps));
-            // Check module properties exclude
-            build.getModules().forEach((value) -> assertFalse(value.getProperties().contains(badProps)));
+            assertEquals(6, CollectionUtils.size(multi3.getProperties()));
         }
     }
 
@@ -179,7 +172,7 @@ public class ArtifactoryPluginITest extends TestCase {
             verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
         }
         verifier.getVerifierProperties().put("use.mavenRepoLocal", "false");
-        verifier.executeGoals(Lists.newArrayList("clean", "deploy", "-Dartifactory.plugin.version=" + getPluginVersion(), "-Dpassword2=123", "-s", "settings.xml"));
+        verifier.executeGoals(Lists.newArrayList("clean", "deploy", "-Dartifactory.plugin.version=" + getPluginVersion(), "-s", "settings.xml"));
         verifier.verifyErrorFreeLog();
     }
 
@@ -241,6 +234,16 @@ public class ArtifactoryPluginITest extends TestCase {
         assertTrue(StringUtils.isNotBlank(build.getStarted()));
         assertTrue(build.getDurationMillis() > 0);
         assertFalse(build.getProperties().isEmpty());
+
+        // Check include exclude properties
+        Properties propertyExpectedToBeFiltered = new Properties();
+        Properties propertyIsNotExpectedToBeFiltered = new Properties();
+        propertyExpectedToBeFiltered.put("password", "password-password");
+        propertyIsNotExpectedToBeFiltered.put("username", "admin-admin");
+        // Check build properties exclude
+        assertFalse(build.getProperties().contains(propertyExpectedToBeFiltered));
+        // Check module properties exclude
+        build.getModules().forEach((value) -> assertFalse(value.getProperties().contains(propertyExpectedToBeFiltered)));
         return build;
     }
 }
