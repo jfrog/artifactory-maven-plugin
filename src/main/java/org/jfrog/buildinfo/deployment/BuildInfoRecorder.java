@@ -25,16 +25,25 @@ import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfigurat
 import org.jfrog.build.extractor.clientConfiguration.IncludeExcludePatterns;
 import org.jfrog.build.extractor.clientConfiguration.PatternMatcher;
 import org.jfrog.build.extractor.clientConfiguration.deploy.DeployDetails;
+import org.jfrog.build.extractor.packageManager.PackageManagerUtils;
 import org.jfrog.buildinfo.resolution.RepositoryListener;
 import org.jfrog.buildinfo.types.ModuleArtifacts;
 import org.jfrog.buildinfo.utils.Utils;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getModuleIdString;
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getTypeString;
-import static org.jfrog.buildinfo.utils.Utils.*;
+import static org.jfrog.buildinfo.utils.Utils.getArtifactName;
+import static org.jfrog.buildinfo.utils.Utils.getDeploymentPath;
+import static org.jfrog.buildinfo.utils.Utils.getFileExtension;
+import static org.jfrog.buildinfo.utils.Utils.isFile;
+import static org.jfrog.buildinfo.utils.Utils.setChecksums;
 
 /**
  * @author yahavi
@@ -152,14 +161,11 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         if (session.getResult().hasExceptions()) {
             return null;
         }
-        if (conf.isIncludeEnvVars()) {
-            Properties envProperties = new Properties();
-            envProperties.putAll(conf.getAllProperties());
-            envProperties = BuildInfoExtractorUtils.getEnvProperties(envProperties, conf.getLog());
-            envProperties.forEach(buildInfoBuilder::addProperty);
-        }
+
         long time = new Date().getTime() - session.getRequest().getStartTime().getTime();
-        return buildInfoBuilder.durationMillis(time).build();
+        BuildInfo buildInfo = buildInfoBuilder.durationMillis(time).build();
+        PackageManagerUtils.collectAndFilterEnvIfNeeded(conf, buildInfo);
+        return buildInfo;
     }
 
     public Set<Artifact> getCurrentModuleDependencies() {

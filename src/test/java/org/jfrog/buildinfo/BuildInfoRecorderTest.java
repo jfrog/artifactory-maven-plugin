@@ -5,10 +5,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.ExecutionEvent;
+import org.jfrog.build.extractor.builder.BuildInfoBuilder;
 import org.jfrog.build.extractor.ci.BuildInfo;
 import org.jfrog.build.extractor.ci.Dependency;
 import org.jfrog.build.extractor.ci.Module;
-import org.jfrog.build.extractor.builder.BuildInfoBuilder;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.types.TestExecutionEvent;
 import org.junit.Before;
@@ -82,12 +82,12 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
 
     public void testExtract() {
         Properties properties = new Properties();
-        properties.put(BUILD_INFO_ENVIRONMENT_PREFIX + "testPropertyKey", "testPropertyValue");
+        properties.put(BUILD_INFO_ENVIRONMENT_PREFIX + "testProperty", "testPropertyValue");
         mojo.artifactory.delegate.fillFromProperties(properties);
         BuildInfo build = buildInfoRecorder.extract(executionEvent);
         assertNotNull(build);
         assertTrue(build.getDurationMillis() > 0);
-        assertEquals("testPropertyValue", build.getProperties().get(BUILD_INFO_ENVIRONMENT_PREFIX + "testPropertyKey"));
+        assertEquals("testPropertyValue", build.getProperties().get(BUILD_INFO_ENVIRONMENT_PREFIX + "testProperty"));
     }
 
     public void testMojoSucceeded() {
