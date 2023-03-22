@@ -39,6 +39,7 @@ import java.util.Set;
 
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getModuleIdString;
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getTypeString;
+import static org.jfrog.build.extractor.packageManager.PackageManagerUtils.filterBuildInfoProperties;
 import static org.jfrog.buildinfo.utils.Utils.getArtifactName;
 import static org.jfrog.buildinfo.utils.Utils.getDeploymentPath;
 import static org.jfrog.buildinfo.utils.Utils.getFileExtension;
@@ -165,6 +166,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         long time = new Date().getTime() - session.getRequest().getStartTime().getTime();
         BuildInfo buildInfo = buildInfoBuilder.durationMillis(time).build();
         PackageManagerUtils.collectAndFilterEnvIfNeeded(conf, buildInfo);
+        filterBuildInfoProperties(conf, buildInfo, conf.getLog());
         return buildInfo;
     }
 
