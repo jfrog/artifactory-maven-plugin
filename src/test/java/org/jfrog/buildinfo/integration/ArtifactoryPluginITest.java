@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 import static org.mockserver.model.HttpRequest.request;
 
@@ -137,6 +136,23 @@ public class ArtifactoryPluginITest extends TestCase {
         }
     }
 
+    /**
+     * Check exclude modules properties with <includeEnvVars>false</includeEnvVars>
+     */
+    public void testMultiModuleModuleEnv() throws Exception {
+        try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
+            initializeMockServer(mockServer);
+            runProject("multi-module-filter-modules-properties");
+
+            // Extract build from request
+            BuildInfo build = getBuild(mockServer);
+
+            // Check include exclude properties
+            build.getModules().forEach((value) -> assertFalse(value.getProperties().containsKey("password")));
+            build.getModules().forEach((value) -> assertTrue(value.getProperties().containsKey("username")));
+        }
+    }
+
     public void testMavenArchetypeExample() throws Exception {
         try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
             initializeMockServer(mockServer);
@@ -152,7 +168,7 @@ public class ArtifactoryPluginITest extends TestCase {
             Module module = build.getModule("org.example:maven-archetype-simple:1.0-SNAPSHOT");
             assertEquals(MAVEN_ARC_ARTIFACTS.length, CollectionUtils.size(module.getArtifacts()));
             assertNotSame(Collections.EMPTY_LIST, module.getDependencies());
-            assertEquals(4, CollectionUtils.size(module.getProperties()));
+            assertEquals(5, CollectionUtils.size(module.getProperties()));
         }
     }
 
@@ -215,14 +231,7 @@ public class ArtifactoryPluginITest extends TestCase {
      * @throws JsonProcessingException - In case of parsing error
      */
     private BuildInfo getAndAssertBuild(ClientAndServer mockServer) throws JsonProcessingException {
-        RequestDefinition[] requestDefinitions = mockServer.retrieveRecordedRequests(request("/artifactory/api/build"));
-        assertEquals(1, ArrayUtils.getLength(requestDefinitions));
-        RequestDefinition buildInfoRequest = requestDefinitions[0];
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode buildInfoRequestNode = mapper.readTree(buildInfoRequest.toString());
-        JsonNode body = buildInfoRequestNode.get("body");
-        JsonNode json = body.get("json");
-        BuildInfo build = mapper.readValue(json.toString(), BuildInfo.class);
+        BuildInfo build = getBuild(mockServer);
         assertNotNull(build);
 
         // Check common fields
@@ -235,15 +244,21 @@ public class ArtifactoryPluginITest extends TestCase {
         assertTrue(build.getDurationMillis() > 0);
         assertFalse(build.getProperties().isEmpty());
 
-        // Check include exclude properties
-        Properties propertyExpectedToBeFiltered = new Properties();
-        Properties propertyIsNotExpectedToBeFiltered = new Properties();
-        propertyExpectedToBeFiltered.put("password", "password-password");
-        propertyIsNotExpectedToBeFiltered.put("username", "admin-admin");
         // Check build properties exclude
-        assertFalse(build.getProperties().contains(propertyExpectedToBeFiltered));
+        assertFalse(build.getProperties().containsKey("password"));
         // Check module properties exclude
-        build.getModules().forEach((value) -> assertFalse(value.getProperties().contains(propertyExpectedToBeFiltered)));
+        build.getModules().forEach((value) -> assertFalse(value.getProperties().containsKey("password")));
         return build;
+    }
+
+    private BuildInfo getBuild(ClientAndServer mockServer) throws JsonProcessingException {
+        RequestDefinition[] requestDefinitions = mockServer.retrieveRecordedRequests(request("/artifactory/api/build"));
+        assertEquals(1, ArrayUtils.getLength(requestDefinitions));
+        RequestDefinition buildInfoRequest = requestDefinitions[0];
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode buildInfoRequestNode = mapper.readTree(buildInfoRequest.toString());
+        JsonNode body = buildInfoRequestNode.get("body");
+        JsonNode json = body.get("json");
+        return mapper.readValue(json.toString(), BuildInfo.class);
     }
 }
