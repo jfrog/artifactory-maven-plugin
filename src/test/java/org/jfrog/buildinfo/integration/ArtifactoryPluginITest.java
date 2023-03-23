@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 import static org.mockserver.model.HttpRequest.request;
 
@@ -137,16 +136,13 @@ public class ArtifactoryPluginITest extends TestCase {
         }
     }
 
-    public void testMultiModuleInstallPluginVer4() throws Exception {
-        // Check exclude modules properties with <includeEnvVars>false</includeEnvVars>
-        testMultiModuleModuleEnv("multi-module-install-plugin-4");
-    }
-
-    @SuppressWarnings("HttpUrlsUsage")
-    private void testMultiModuleModuleEnv(String projectName) throws Exception {
+    /**
+     * Check exclude modules properties with <includeEnvVars>false</includeEnvVars>
+     */
+    public void testMultiModuleModuleEnv() throws Exception {
         try (ClientAndServer mockServer = ClientAndServer.startClientAndServer(8081)) {
             initializeMockServer(mockServer);
-            runProject(projectName);
+            runProject("multi-module-filter-modules-properties");
 
             // Extract build from request
             BuildInfo build = getBuild(mockServer);
