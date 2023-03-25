@@ -11,6 +11,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Proxy;
 import org.jfrog.build.extractor.ci.BuildInfoFields;
 import org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration;
 import org.jfrog.build.extractor.clientConfiguration.ClientProperties;
@@ -61,10 +62,14 @@ public class ArtifactoryMojo extends AbstractMojo {
     @Parameter
     Config.Resolver resolver = new Config.Resolver();
 
+    @Parameter
+    Config.Proxy proxy = new Config.Proxy();
+
     @Override
     public void execute() {
         if (session.getRequest().getData().putIfAbsent("configured", Boolean.TRUE) == null) {
             replaceVariables();
+            setupProxy();
             enforceResolution();
             enforceDeployment();
         }
@@ -76,6 +81,20 @@ public class ArtifactoryMojo extends AbstractMojo {
     private void replaceVariables() {
         artifactory.delegate.getAllProperties().replaceAll((key, value) -> Utils.parseInput(value));
         deployProperties.replaceAll((key, value) -> Utils.parseInput(value));
+    }
+
+    /**
+     * Set up proxy from settings.xml, if not provided.
+     */
+    private void setupProxy() {
+        if (this.proxy.getHost() != null) {
+            return;
+        }
+        Proxy proxy = session.getSettings().getActiveProxy();
+        this.proxy.setHost(proxy.getHost());
+        this.proxy.setPort(proxy.getPort());
+        this.proxy.setUsername(proxy.getUsername());
+        this.proxy.setPassword(proxy.getPassword());
     }
 
     /**

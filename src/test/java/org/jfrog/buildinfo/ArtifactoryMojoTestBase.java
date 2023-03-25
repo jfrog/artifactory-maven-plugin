@@ -137,6 +137,7 @@ public abstract class ArtifactoryMojoTestBase extends AbstractMojoTestCase {
         mojo.buildInfo = objectMapper.readValue(configuration.getChild("buildInfo").toString(), Config.BuildInfo.class);
         mojo.publisher = objectMapper.readValue(configuration.getChild("publisher").toString(), Config.Publisher.class);
         mojo.resolver = objectMapper.readValue(configuration.getChild("resolver").toString(), Config.Resolver.class);
+        mojo.proxy = objectMapper.readValue(configuration.getChild("proxy").toString(), Config.Proxy.class);
         Log log = new MavenLogger();
         mojo.setLog(log);
         mojo.repositoryListener = new RepositoryListener(new PlexusLogger(log));
