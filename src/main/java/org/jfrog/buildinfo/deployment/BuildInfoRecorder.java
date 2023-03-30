@@ -12,7 +12,11 @@ import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.DefaultDependencyResolutionRequest;
+import org.apache.maven.project.DependencyResolutionResult;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectDependenciesResolver;
+import org.eclipse.aether.graph.DependencyNode;
 import org.jfrog.build.extractor.BuildInfoExtractor;
 import org.jfrog.build.extractor.BuildInfoExtractorUtils;
 import org.jfrog.build.extractor.builder.ArtifactBuilder;
@@ -28,6 +32,8 @@ import org.jfrog.build.extractor.clientConfiguration.deploy.DeployDetails;
 import org.jfrog.build.extractor.packageManager.PackageManagerUtils;
 import org.jfrog.buildinfo.resolution.RepositoryListener;
 import org.jfrog.buildinfo.types.ModuleArtifacts;
+import org.jfrog.buildinfo.utils.DependencyResolutionUtil;
+import org.jfrog.buildinfo.utils.ReactorDependencyFilter;
 import org.jfrog.buildinfo.utils.Utils;
 
 import java.io.File;
@@ -61,6 +67,8 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
     private final ExecutionListener wrappedListener;
     private final BuildDeployer buildDeployer;
     private final Log logger;
+    private Map<String, String[][]> dependencyParentsMap;
+    private ProjectDependenciesResolver dependenciesResolver;
 
     public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf) {
         this.wrappedListener = ObjectUtils.defaultIfNull(session.getRequest().getExecutionListener(), new AbstractExecutionListener());
@@ -68,6 +76,15 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
+    }
+
+    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf, ProjectDependenciesResolver dependenciesResolver) {
+        this.wrappedListener = ObjectUtils.defaultIfNull(session.getRequest().getExecutionListener(), new AbstractExecutionListener());
+        this.buildInfoBuilder = new BuildInfoModelPropertyResolver(logger, session, conf);
+        this.buildDeployer = new BuildDeployer(logger);
+        this.logger = logger;
+        this.conf = conf;
+        this.dependenciesResolver = dependenciesResolver;
     }
 
     /**
@@ -94,6 +111,11 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
             addArtifactsToCurrentModule(project, moduleBuilder);
         }
 
+        // Construct map of dependency to parents
+        if (dependenciesResolver != null) {
+            DependencyNode dependencyNode = getDependencyNode(project, event.getSession());
+            dependencyParentsMap = DependencyResolutionUtil.createDependencyParentsMap(dependencyNode);
+        }
         // Fill currentModuleDependencies
         addDependencies(project);
 
@@ -108,6 +130,28 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         buildTimeDependencies.clear();
 
         wrappedListener.projectSucceeded(event);
+    }
+
+    /**
+     *  Get current project DependencyNode
+     * @param project The Maven project
+     * @param session The Maven session
+     * @return The DependencyNode Object
+     */
+    private DependencyNode getDependencyNode(MavenProject project, MavenSession session) {
+        Collection<Artifact> projectArtifacts = new HashSet<>();
+        projectArtifacts.add(project.getArtifact());
+        DefaultDependencyResolutionRequest request =
+                new DefaultDependencyResolutionRequest(project, session.getRepositorySession());
+        // Filter current project artifact
+        request.setResolutionFilter(new ReactorDependencyFilter(projectArtifacts));
+        try {
+            DependencyResolutionResult result = dependenciesResolver.resolve(request);
+            return result.getDependencyGraph();
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return null;
     }
 
     /**
@@ -287,9 +331,13 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
     private void addDependenciesToCurrentModule(ModuleBuilder moduleBuilder) {
         for (Artifact moduleDependency : currentModuleDependencies.getOrCreate()) {
             File depFile = moduleDependency.getFile();
+            String gav = getModuleIdString(moduleDependency.getGroupId(), moduleDependency.getArtifactId(), moduleDependency.getVersion());
             DependencyBuilder dependencyBuilder = new DependencyBuilder()
-                    .id(getModuleIdString(moduleDependency.getGroupId(), moduleDependency.getArtifactId(), moduleDependency.getVersion()))
-                    .type(getTypeString(moduleDependency.getType(), moduleDependency.getClassifier(), getFileExtension(depFile)));
+                    .id(gav).type(getTypeString(moduleDependency.getType(), moduleDependency.getClassifier(), getFileExtension(depFile)));
+            // add RequestBy to Dependency
+            if (dependenciesResolver != null) {
+                dependencyBuilder.requestedBy(dependencyParentsMap.get(gav));
+            }
             String scopes = moduleDependency.getScope();
             if (StringUtils.isNotBlank(scopes)) {
                 dependencyBuilder.scopes(Sets.newHashSet(scopes));
