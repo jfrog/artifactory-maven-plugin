@@ -58,6 +58,12 @@
                                 <agentVersion>2</agentVersion>
                                 <buildRetentionMaxDays>5</buildRetentionMaxDays>
                             </buildInfo>
+                            <proxy>
+                                <host>proxy.jfrog.io</host>
+                                <port>8888</port>
+                                <username>proxyUser</username>
+                                <password>proxyPassword</password>
+                            </proxy>
                         </configuration>
                     </execution>
                 </executions>

@@ -54,4 +54,12 @@ public class Config {
         @Delegate(types = {ArtifactoryClientConfiguration.BuildInfoHandler.class, PrefixPropertyHandler.class})
         ArtifactoryClientConfiguration.BuildInfoHandler delegate = CLIENT_CONFIGURATION.info;
     }
+
+    /**
+     * Represents the 'proxy' configuration in the pom.xml.
+     */
+    public static class Proxy {
+        @Delegate(types = {ArtifactoryClientConfiguration.ProxyHandler.class, PrefixPropertyHandler.class})
+        ArtifactoryClientConfiguration.ProxyHandler delegate = CLIENT_CONFIGURATION.proxy;
+    }
 }

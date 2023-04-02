@@ -71,6 +71,16 @@ public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
         assertTrue(buildInfo.getBuildStarted().startsWith("2020-01-01T00:00:00.000"));
     }
 
+    public void testProxyConfiguration() {
+        Config.Proxy configProxy = mojo.proxy;
+        assertNotNull(configProxy);
+        ArtifactoryClientConfiguration.ProxyHandler proxyHandler = configProxy.delegate;
+        assertEquals("proxy.jfrog.io", proxyHandler.getHost());
+        assertEquals(Integer.valueOf(8888), proxyHandler.getPort());
+        assertEquals("proxyUser", proxyHandler.getUsername());
+        assertEquals("proxyPassword", proxyHandler.getPassword());
+    }
+
     public void testDeployProperties() {
         // Test input deploy properties
         Map<String, String> deployProperties = mojo.deployProperties;
