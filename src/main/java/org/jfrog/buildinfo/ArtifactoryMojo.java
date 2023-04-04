@@ -91,6 +91,9 @@ public class ArtifactoryMojo extends AbstractMojo {
             return;
         }
         Proxy proxy = session.getSettings().getActiveProxy();
+        if (proxy == null) {
+            return;
+        }
         this.proxy.setHost(proxy.getHost());
         this.proxy.setPort(proxy.getPort());
         this.proxy.setUsername(proxy.getUsername());
