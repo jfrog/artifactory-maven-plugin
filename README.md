@@ -10,7 +10,7 @@
 
 - [Overview](#overview)
 - [Using the Maven Artifactory plugin](#using-maven-artifactory-plugin)
-    - [Minimal Configuration](#basic-configuration)
+    - [Basic Configuration](#basic-configuration)
     - [Full Configuration](#full-configuration)
     - [Configuration Details](#configuration-details)
     - [Reading Environment Variables and System Properties](#reading-environment-variables-and-system-properties)
@@ -142,7 +142,7 @@ However, the Maven Artifactory Plugin provides many other configurations:
 |   `<artifactory>`    | Specifies whether environment variables are published as part of BuildInfo metadata and which include or exclude patterns are applied when variables are collected                                                                                       |   
 |    `<publisher>`     | Defines an Artifactory repository where build artifacts should be published using a combination of a `<contextUrl>` and `<repoKey>/<snapshotRepoKey>`. Build artifacts are deployed if the deploy goal is executed and only after all modules are built. |   
 |    `<buildInfo>`     | Updates BuildInfo metadata published together with build artifacts. You can configure whether or not BuildInfo metadata is published using the <publisher> configuration.                                                                                |   
-|      `<proxy>`       | Specifies an HTTP/S proxy.                                                                                                                                                                                                                               |   
+|      `<proxy>`       | Specifies HTTP/S proxy.                                                                                                                                                                                                                                  |   
 
 ### Reading Environment Variables and System Properties
 
