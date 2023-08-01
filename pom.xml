@@ -13,7 +13,7 @@
 
     <properties>
         <maven.min.version>3.3.9</maven.min.version>
-        <buildinfo.version>2.39.8</buildinfo.version>
+        <buildinfo.version>2.41.3</buildinfo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -176,7 +176,7 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
-            <version>4.6.0</version>
+            <version>4.8.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
