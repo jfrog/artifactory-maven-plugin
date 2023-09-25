@@ -223,7 +223,9 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
 
         // if recordAllDependencies=true, add build time dependencies
         if (conf.publisher.isRecordAllDependencies()) {
-            dependencies.addAll(buildTimeDependencies);
+            synchronized(buildTimeDependencies) {
+                dependencies.addAll(buildTimeDependencies);
+            }
         }
 
         currentModuleDependencies.set(dependencies);
