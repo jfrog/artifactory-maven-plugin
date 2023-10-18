@@ -7,7 +7,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Configure Java 8 and generate a settings.xml file containing the OSSRH credentials
       - name: Set up Maven Central Repository
