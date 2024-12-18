@@ -2,6 +2,7 @@ package org.jfrog.buildinfo.deployment;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,6 @@ import java.util.Set;
 
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getModuleIdString;
 import static org.jfrog.build.extractor.BuildInfoExtractorUtils.getTypeString;
-import static org.jfrog.build.extractor.packageManager.PackageManagerUtils.filterBuildInfoProperties;
 import static org.jfrog.buildinfo.utils.Utils.getArtifactName;
 import static org.jfrog.buildinfo.utils.Utils.getDeploymentPath;
 import static org.jfrog.buildinfo.utils.Utils.getFileExtension;
@@ -50,6 +50,8 @@ import static org.jfrog.buildinfo.utils.Utils.setChecksums;
  * @author yahavi
  */
 public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, ExecutionListener {
+
+    private static final String[] TEST_GOALS = {"test", "testCompile"};
 
     private final Map<String, DeployDetails> deployableArtifacts = Maps.newConcurrentMap();
     private final Set<Artifact> buildTimeDependencies = Collections.synchronizedSet(new HashSet<>());
@@ -117,7 +119,13 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      */
     @Override
     public void mojoSucceeded(ExecutionEvent event) {
-        addDependencies(event.getProject());
+        Object skipProperty = event.getSession().getUserProperties().get("maven.test.skip");
+        boolean skipTest = skipProperty != null && Boolean.parseBoolean(skipProperty.toString());
+        boolean test =  ArrayUtils.contains(TEST_GOALS, event.getMojoExecution().getGoal());
+
+        if (!test || !skipTest) {
+            addDependencies(event.getProject());
+        }
 
         wrappedListener.mojoSucceeded(event);
     }
