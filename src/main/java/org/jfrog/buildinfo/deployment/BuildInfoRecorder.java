@@ -2,7 +2,6 @@ package org.jfrog.buildinfo.deployment;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,8 +50,6 @@ import static org.jfrog.buildinfo.utils.Utils.setChecksums;
  */
 public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, ExecutionListener {
 
-    private static final String[] TEST_GOALS = {"test", "testCompile"};
-
     private final Map<String, DeployDetails> deployableArtifacts = Maps.newConcurrentMap();
     private final Set<Artifact> buildTimeDependencies = Collections.synchronizedSet(new HashSet<>());
     private final ModuleArtifacts currentModuleDependencies = new ModuleArtifacts();
@@ -63,13 +60,15 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
     private final ExecutionListener wrappedListener;
     private final BuildDeployer buildDeployer;
     private final Log logger;
+    private final boolean skipTests;
 
-    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf) {
+    public BuildInfoRecorder(MavenSession session, Log logger, ArtifactoryClientConfiguration conf, boolean skipTests) {
         this.wrappedListener = ObjectUtils.defaultIfNull(session.getRequest().getExecutionListener(), new AbstractExecutionListener());
         this.buildInfoBuilder = new BuildInfoModelPropertyResolver(logger, session, conf);
         this.buildDeployer = new BuildDeployer(logger);
         this.logger = logger;
         this.conf = conf;
+        this.skipTests = skipTests;
     }
 
     /**
@@ -97,7 +96,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
         }
 
         // Fill currentModuleDependencies
-        addDependencies(project);
+        addDependencies(project, skipTests);
 
         // Build module
         addDependenciesToCurrentModule(moduleBuilder);
@@ -119,13 +118,9 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      */
     @Override
     public void mojoSucceeded(ExecutionEvent event) {
-        Object skipProperty = event.getSession().getUserProperties().get("maven.test.skip");
-        boolean skipTest = skipProperty != null && Boolean.parseBoolean(skipProperty.toString());
-        boolean test =  ArrayUtils.contains(TEST_GOALS, event.getMojoExecution().getGoal());
 
-        if (!test || !skipTest) {
-            addDependencies(event.getProject());
-        }
+        addDependencies(event.getProject(), skipTests);
+
 
         wrappedListener.mojoSucceeded(event);
     }
@@ -137,7 +132,7 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      */
     @Override
     public void mojoFailed(ExecutionEvent event) {
-        addDependencies(event.getProject());
+        addDependencies(event.getProject(), skipTests);
 
         wrappedListener.mojoFailed(event);
     }
@@ -212,14 +207,18 @@ public class BuildInfoRecorder implements BuildInfoExtractor<ExecutionEvent>, Ex
      * In case an artifact is included in both MavenProject dependencies and currentModuleDependencies,
      * we'd like to keep the one that was taken from the MavenProject, because of the scope it has.
      *
-     * @param project - The Maven project
+     * @param project   - The Maven project
+     * @param skipTests
      */
-    private void addDependencies(MavenProject project) {
+    private void addDependencies(MavenProject project, boolean skipTests) {
         // Create a set with new project dependencies. These dependencies are 1st priority in the set.
         Set<Artifact> dependencies = Sets.newHashSet();
         for (Artifact artifact : project.getArtifacts()) {
-            String classifier = StringUtils.defaultString(artifact.getClassifier());
             String scope = StringUtils.defaultIfBlank(artifact.getScope(), Artifact.SCOPE_COMPILE);
+            if (skipTests && Artifact.SCOPE_TEST.equals(scope)) {
+                continue;
+            }
+            String classifier = StringUtils.defaultString(artifact.getClassifier());
             Artifact art = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
                     artifact.getVersion(), scope, artifact.getType(), classifier, artifact.getArtifactHandler());
             art.setFile(artifact.getFile());
