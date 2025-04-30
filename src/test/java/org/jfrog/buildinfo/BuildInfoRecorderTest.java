@@ -12,12 +12,14 @@ import org.jfrog.build.extractor.ci.Module;
 import org.jfrog.buildinfo.deployment.BuildInfoRecorder;
 import org.jfrog.buildinfo.types.TestExecutionEvent;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import static org.jfrog.build.api.BuildInfoProperties.BUILD_INFO_ENVIRONMENT_PREFIX;
+import static org.jfrog.buildinfo.utils.Utils.getArtifactName;
 
 /**
  * Test {@link BuildInfoRecorder} class functionality.
@@ -114,4 +116,32 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertEquals(TEST_ARTIFACT.getClassifier(), dependency.getClassifier());
     }
 
+    public void testArtifactNameWithoutClassifierForPom() {
+        Artifact pomArtifact = new DefaultArtifact("groupId", "artifactId", "1.0.0", "compile", "pom", "", null);
+        String artifactName = getArtifactName(pomArtifact.getArtifactId(), pomArtifact.getVersion(), pomArtifact.getClassifier(), "pom");
+        assertEquals("artifactId-1.0.0.pom", artifactName);
+    }
+
+    public void testArtifactNameWithClassifierForPom() {
+        Artifact pomArtifact = new DefaultArtifact("groupId", "artifactId", "1.0.0", "compile", "pom", "my-classifier", null);
+        String artifactName = getArtifactName(pomArtifact.getArtifactId(), pomArtifact.getVersion(), pomArtifact.getClassifier(), "pom");
+        assertEquals("artifactId-1.0.0.pom", artifactName); // Ensure suffix is NOT added
+    }
+
+    public void testArtifactNameWithClassifier() {
+        Artifact jarArtifact = new DefaultArtifact("groupId", "artifactId", "1.0.0", "compile", "jar", "my-classifier", null);
+        String artifactName = getArtifactName(jarArtifact.getArtifactId(), jarArtifact.getVersion(), jarArtifact.getClassifier(), jarArtifact.getType());
+        assertEquals("artifactId-1.0.0-my-classifier.jar", artifactName); // Ensure suffix is added
+    }
+
+    public void testGetArtifactNameWithNullFileExtension() {
+        String artifactId = "test-artifact";
+        String version = "1.0.0";
+        String classifier = "my-classifier";
+        String fileExtension = null; // Simulate null file extension
+
+        String artifactName = getArtifactName(artifactId, version, classifier, fileExtension);
+        String expectedName = "test-artifact-1.0.0-my-classifier.null";
+        assertEquals(expectedName, artifactName);
+    }
 }
