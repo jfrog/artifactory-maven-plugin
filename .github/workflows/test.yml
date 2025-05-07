@@ -8,10 +8,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '1.8'          # Specify the Java version
+          distribution: 'temurin'      # Use Temurin distribution (a popular choice)
+
+      - name: Install dependencies
         run: mvn install -B -DskipTests
+
       - name: Test
         run: mvn verify -B -DskipITs=false
