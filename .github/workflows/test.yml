@@ -17,8 +17,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '1.8'          # Specify the Java version
-          distribution: 'temurin'      # Use Temurin distribution (a popular choice)
+          java-version: '8'          # Use the correct version identifier for Java 8
+          distribution: 'temurin'    # Use Temurin or any other distribution, as appropriate
 
       - name: Install dependencies
         run: mvn install -B -DskipTests
