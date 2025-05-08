@@ -110,7 +110,7 @@ public class Utils {
      */
     public static String getArtifactName(String artifactId, String version, String classifier, String fileExtension) {
         String name = artifactId + "-" + version;
-        if (StringUtils.isNotBlank(classifier)) {
+        if (StringUtils.isNotBlank(classifier) && !StringUtils.equals(fileExtension, "pom")) {
             name += "-" + classifier;
         }
         return name + "." + fileExtension;
