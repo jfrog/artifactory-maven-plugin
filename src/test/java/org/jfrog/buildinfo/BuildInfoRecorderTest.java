@@ -88,6 +88,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         BuildInfo build = buildInfoRecorder.extract(executionEvent);
         assertNotNull(build);
         assertTrue(build.getDurationMillis() > 0);
+        assertTrue(build.getStartedMillis() > 0);
         assertEquals("testPropertyValue", build.getProperties().get(BUILD_INFO_ENVIRONMENT_PREFIX + "testProperty"));
     }
 
