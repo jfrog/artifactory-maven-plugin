@@ -22,6 +22,17 @@ jobs:
           gpg-private-key: ${{ secrets.OSSRH_GPG_PRIVATE_KEY }}
           gpg-passphrase: OSSRH_GPG_PASSPHRASE
 
+      - name: Install JFrog CLI
+        run: curl -fL https://install-cli.jfrog.io | sh
+
+      - name: Configure JFrog Platform
+        run: |
+          ./jf c add internal --url=${{ secrets.ECOSYS_URL }} --user=${{ secrets.ECOSYS_USER }} --password=${{ secrets.ECOSYS_APIKEY }}
+          ./jf c use internal
+
+      - name: Scan with jf audit
+        run: jf audit
+
       # Run mvn install
       - name: Install
         run: mvn install -B
