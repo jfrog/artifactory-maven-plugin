@@ -22,6 +22,15 @@ jobs:
           gpg-private-key: ${{ secrets.OSSRH_GPG_PRIVATE_KEY }}
           gpg-passphrase: OSSRH_GPG_PASSPHRASE
 
+      - name: Install jfrog cli
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+         JF_URL: ${{ vars.ARTIFACTORY_URL }}
+         JF_ACCESS_TOKEN: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
+
+      - name: Scan with jfrog audit
+        run: jfrog audit
+
       # Run mvn install
       - name: Install
         run: mvn install -B
