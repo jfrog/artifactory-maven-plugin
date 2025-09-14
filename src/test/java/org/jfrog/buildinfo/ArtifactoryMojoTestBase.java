@@ -11,9 +11,11 @@ import org.apache.maven.execution.*;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.project.ProjectDependenciesResolver;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -44,6 +46,9 @@ public abstract class ArtifactoryMojoTestBase extends AbstractMojoTestCase {
     ArtifactoryMojo mojo;
 
     static Date TEST_DATE = createTestDate();
+
+    @Component(role = ProjectDependenciesResolver.class)
+    ProjectDependenciesResolver dependenciesResolver;
 
     @Before
     public void setUp() throws Exception {
@@ -141,5 +146,7 @@ public abstract class ArtifactoryMojoTestBase extends AbstractMojoTestCase {
         Log log = new MavenLogger();
         mojo.setLog(log);
         mojo.repositoryListener = new RepositoryListener(new PlexusLogger(log));
+        mojo.dependenciesResolver = dependenciesResolver;
+
     }
 }

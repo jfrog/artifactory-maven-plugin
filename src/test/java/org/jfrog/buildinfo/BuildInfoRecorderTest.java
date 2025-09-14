@@ -35,7 +35,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
     public void setUp() throws Exception {
         super.setUp();
         executionEvent = new TestExecutionEvent(mojo.session, mojo.project);
-        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate);
+        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate, mojo.dependenciesResolver);
         mojo.project.setArtifacts(Sets.newHashSet(TEST_ARTIFACT));
     }
 
@@ -79,6 +79,8 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
         assertEquals(1, dependency.getScopes().size());
         assertTrue(dependency.getScopes().contains("compile"));
         assertEquals(TEST_ARTIFACT.getType(), dependency.getType());
+        assertEquals(null, dependency.getRequestedBy());
+
     }
 
     public void testExtract() {
