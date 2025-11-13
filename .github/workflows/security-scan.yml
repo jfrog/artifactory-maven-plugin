@@ -32,11 +32,11 @@ jobs:
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: ${{ vars.ARTIFACTORY_URL }}
+          JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
 
       - name: Run JFrog Audit
-        run: jf audit --mvn --format=table
+        run: jf audit
 
       - name: Run Tests
         run: mvn clean test -B
