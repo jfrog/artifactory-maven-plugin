@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, master ]
   pull_request_target:
-    types: [ opened, synchronize ]
+    types: [labeled]
   schedule:
     - cron: '0 9 * * 1'  # Weekly on Monday at 9 AM UTC
 
