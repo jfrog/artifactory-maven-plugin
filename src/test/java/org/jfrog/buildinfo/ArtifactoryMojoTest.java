@@ -18,6 +18,7 @@ import static org.jfrog.build.extractor.clientConfiguration.ClientProperties.PRO
 public class ArtifactoryMojoTest extends ArtifactoryMojoTestBase {
 
     @Override
+    // test pipelines
     public void setUp() throws Exception {
         System.setProperty("USER_FROM_SYS_PROP", "admin");
         super.setUp();
