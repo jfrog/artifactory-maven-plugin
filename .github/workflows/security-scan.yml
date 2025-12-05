@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, master ]
   pull_request_target:
-    types: [ opened, synchronize ]
+    types: [ labeled ]
   schedule:
     - cron: '0 9 * * 1'  # Weekly on Monday at 9 AM UTC
 
@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   jfrog-audit:
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'safe to test')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
