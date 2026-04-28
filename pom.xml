@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.jfrog.buildinfo</groupId>
     <artifactId>artifactory-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
@@ -22,13 +24,10 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <!-- Points to new Central Portal snapshot repo (not legacy oss.sonatype.org) -->
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
     </distributionManagement>
 
     <prerequisites>
@@ -225,7 +224,6 @@
             <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -378,7 +376,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!--Unit tests-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -390,7 +387,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <!--Integration tests-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -422,8 +418,8 @@
             <id>release</id>
             <activation>
                 <!--
-                    In order to allow to install the plugin before using it in deployment,
-                    we activate the 'release' profile only if Artifactory URL is specified.
+                  In order to allow to install the plugin before using it in deployment,
+                  we activate the 'release' profile only if Artifactory URL is specified.
                 -->
                 <property>
                     <name>ARTIFACTORY_URL</name>
@@ -457,11 +453,13 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <!-- Use this profile to sign and upload the JAR to Maven Central -->
             <id>upload-to-central</id>
             <build>
                 <plugins>
+                    <!-- GPG signing — required by Maven Central -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -482,19 +480,25 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- Central Portal publisher — replaces legacy nexus-staging-maven-plugin -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <!-- Must match the server id in settings.xml written by the workflow -->
+                            <publishingServerId>central</publishingServerId>
+                            <!-- Automatically promote from staging to published -->
+                            <autoPublish>true</autoPublish>
+                            <!-- Block the build until Central confirms the artifact is live -->
+                            <waitUntil>published</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
+
 </project>
