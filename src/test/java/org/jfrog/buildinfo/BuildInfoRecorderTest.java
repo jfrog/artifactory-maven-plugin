@@ -35,7 +35,7 @@ public class BuildInfoRecorderTest extends ArtifactoryMojoTestBase {
     public void setUp() throws Exception {
         super.setUp();
         executionEvent = new TestExecutionEvent(mojo.session, mojo.project);
-        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate);
+        buildInfoRecorder = new BuildInfoRecorder(mojo.session, mojo.getLog(), mojo.artifactory.delegate, true);
         mojo.project.setArtifacts(Sets.newHashSet(TEST_ARTIFACT));
     }
 

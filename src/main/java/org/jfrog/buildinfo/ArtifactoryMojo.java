@@ -65,6 +65,9 @@ public class ArtifactoryMojo extends AbstractMojo {
     @Parameter
     Config.Proxy proxy = new Config.Proxy();
 
+    @Parameter(property = "skipTests", defaultValue = "false")
+    boolean skipTests;
+
     @Override
     public void execute() {
         if (session.getRequest().getData().putIfAbsent("configured", Boolean.TRUE) == null) {
@@ -125,7 +128,7 @@ public class ArtifactoryMojo extends AbstractMojo {
         skipDefaultDeploy();
         completeConfig();
         addDeployProperties();
-        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate);
+        BuildInfoRecorder executionListener = new BuildInfoRecorder(session, getLog(), artifactory.delegate, skipTests);
         repositoryListener.setBuildInfoRecorder(executionListener);
         session.getRequest().setExecutionListener(executionListener);
     }
